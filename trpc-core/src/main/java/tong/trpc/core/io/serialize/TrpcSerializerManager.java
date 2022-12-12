@@ -7,10 +7,12 @@ public class TrpcSerializerManager {
     private final static ConcurrentHashMap<Byte, ITrpcSerializer> type2Serializer = new ConcurrentHashMap<>();
 
     static {
-        ITrpcSerializer jdk = new TrpcJdkSerializer();
-        type2Serializer.put(jdk.getType(), jdk);
-        ITrpcSerializer protostuffSerializer = new TrpcProtostuffSerializer();
-        type2Serializer.put(protostuffSerializer.getType(), protostuffSerializer);
+        ITrpcSerializer[] serializers = new ITrpcSerializer[]{ new TrpcJdkSerializer(), new TrpcProtostuffSerializer(),
+            new TrpcKryoSerializer(), new TrpcFstSerializer(), new TrpcJacksonSerializer()
+        };
+        for (ITrpcSerializer serializer : serializers) {
+            type2Serializer.put(serializer.getType(), serializer);
+        }
     }
 
     public static ITrpcSerializer getSerializer(byte key) {

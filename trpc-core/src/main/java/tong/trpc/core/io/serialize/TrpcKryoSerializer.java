@@ -1,32 +1,36 @@
 package tong.trpc.core.io.serialize;
 
 import lombok.extern.slf4j.Slf4j;
-import tong.trpc.core.util.ProtostuffSerializerUtil;
+import tong.trpc.core.domain.TrpcRequest;
+import tong.trpc.core.util.KryoSerializerUtil;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @Author tong-exists
- * @Create 2022/12/11 20:27
+ * @Create 2022/12/12 11:13
  * @Version 1.0
  */
 @Slf4j
-public class TrpcProtostuffSerializer implements ITrpcSerializer{
+public class TrpcKryoSerializer implements ITrpcSerializer {
 
 
     @Override
     public <T> byte[] serialize(T obj) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, IOException {
-        return ProtostuffSerializerUtil.serialize(obj);
+        return KryoSerializerUtil.serialize(obj);
     }
 
     @Override
     public <T> T deserialize(byte[] data, Class<T> clazz) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, IOException, ClassNotFoundException {
-        return ProtostuffSerializerUtil.deserialize(data, clazz);
+         return KryoSerializerUtil.deserialize(data, clazz);
     }
+
 
     @Override
     public byte getType() {
-        return TrpcSerialType.TrpcProtostuffSerializer.getCode();
+        return TrpcSerialType.TrpcKryoSerializer.getCode();
     }
 }

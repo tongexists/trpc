@@ -6,11 +6,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import tong.trpc.core.domain.*;
-import tong.trpc.core.io.client.TrpcClient;
-import tong.trpc.core.io.protocol.TrpcTransportProtocol;
-import tong.trpc.core.io.protocol.TrpcTransportProtocolHeader;
+import tong.trpc.core.io.TrpcClient;
 import tong.trpc.core.io.serialize.TrpcSerialType;
 
+import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
@@ -69,7 +68,7 @@ public class TrpcInvocation<T> {
         this.request = new TrpcRequest();
         this.request.setClassName(this.serviceInterfaceName);
         this.request.setMethodName(this.methodName);
-        this.request.setParamsTypes(this.paramsTypes);
+        this.request.setParamsTypes(Arrays.stream(this.paramsTypes).map(Class::getName).toArray(String[]::new));
         this.request.setParams(this.params);
         TrpcTransportProtocolHeader header = new TrpcTransportProtocolHeader(
                 TrpcConstant.MAGIC, this.serialType.getCode(), TrpcRequestType.REQUEST.getCode(),

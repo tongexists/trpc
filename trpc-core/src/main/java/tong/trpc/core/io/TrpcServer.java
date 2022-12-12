@@ -1,4 +1,4 @@
-package tong.trpc.core.io.server;
+package tong.trpc.core.io;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -9,8 +9,10 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import lombok.extern.slf4j.Slf4j;
-import tong.trpc.core.io.protocol.TrpcDecoder;
-import tong.trpc.core.io.protocol.TrpcEncoder;
+import tong.trpc.core.io.handler.ExceptionHandler;
+import tong.trpc.core.io.handler.TrpcDecoder;
+import tong.trpc.core.io.handler.TrpcEncoder;
+import tong.trpc.core.io.handler.TrpcServerHandler;
 
 @Slf4j
 public class TrpcServer {
@@ -43,7 +45,8 @@ public class TrpcServer {
                                         0))
                                 .addLast(new TrpcDecoder())
                                 .addLast(new TrpcEncoder())
-                                .addLast(new TrpcServerHandler());
+                                .addLast(new TrpcServerHandler())
+                                .addLast(new ExceptionHandler());
                     }
                 });
         try {

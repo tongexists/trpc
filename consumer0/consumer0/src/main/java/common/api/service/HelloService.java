@@ -1,16 +1,17 @@
 package common.api.service;
 
-import com.example.tutorial.protos.Person;
+import tong.consumer.test.model.Student;
 import tong.trpc.core.TrpcInvocation;
 import tong.trpc.core.annotation.TrpcService;
 import tong.trpc.core.io.serialize.TrpcSerialType;
 
 
-@TrpcService(serviceInstanceName = "helloService", serialType = TrpcSerialType.TrpcJdkSerializer)
+@TrpcService(serviceInstanceName = "helloService", serialType = TrpcSerialType.TrpcFstSerializer)
 public interface HelloService {
 
     TrpcInvocation<Void> helloWithoutResult(String name);
 
     TrpcInvocation<String> helloWithResult(String name);
-    TrpcInvocation<Person> helloPerson(Person p);
+
+    TrpcInvocation<Student> helloStudent(Student p);
 }

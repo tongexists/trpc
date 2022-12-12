@@ -1,7 +1,5 @@
 package tong.trpc.core.io.serialize;
 
-import tong.trpc.core.domain.TrpcRequest;
-
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 

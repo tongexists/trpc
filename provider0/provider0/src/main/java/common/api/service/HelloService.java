@@ -1,6 +1,7 @@
 package common.api.service;
 
-import com.example.tutorial.protos.Person;
+import tong.consumer.test.model.Student;
+
 
 public interface HelloService {
 
@@ -8,6 +9,6 @@ public interface HelloService {
 
     String helloWithResult(String name);
 
-    Person helloPerson(Person p);
 
+    Student helloStudent(Student p);
 }

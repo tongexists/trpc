@@ -17,6 +17,6 @@ public class TrpcRequest implements Serializable {
 
     private Object[] params; // 请求参数
 
-    private Class<?>[] paramsTypes; // 参数类型
+    private String[] paramsTypes; // 参数类型
 
 }

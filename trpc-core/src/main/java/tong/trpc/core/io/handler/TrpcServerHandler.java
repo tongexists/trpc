@@ -1,17 +1,13 @@
-package tong.trpc.core.io.server;
+package tong.trpc.core.io.handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import tong.trpc.core.domain.TrpcRequest;
-import tong.trpc.core.domain.TrpcRequestType;
-import tong.trpc.core.domain.TrpcResponse;
-import tong.trpc.core.domain.TrpcResponseCode;
-import tong.trpc.core.io.protocol.TrpcTransportProtocol;
-import tong.trpc.core.io.protocol.TrpcTransportProtocolHeader;
+import tong.trpc.core.domain.*;
 import tong.trpc.core.spring.SpringBeanManager;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 public class TrpcServerHandler extends SimpleChannelInboundHandler<TrpcTransportProtocol<TrpcRequest>> {
     @Override
@@ -43,7 +39,14 @@ public class TrpcServerHandler extends SimpleChannelInboundHandler<TrpcTransport
             // 加载实例
             Object bean = SpringBeanManager.getBean(clazz);
             // 加载实例调用的方法
-            Method method = clazz.getDeclaredMethod(request.getMethodName(), request.getParamsTypes());
+            Class<?>[] paramTypes = Arrays.stream(request.getParamsTypes()).map(clsStr -> {
+                try {
+                    return Class.forName(clsStr);
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+            }).toArray(Class[]::new);
+            Method method = clazz.getDeclaredMethod(request.getMethodName(), paramTypes);
             // 通过反射调用
             return method.invoke(bean, request.getParams());
         } catch (ClassNotFoundException e) {

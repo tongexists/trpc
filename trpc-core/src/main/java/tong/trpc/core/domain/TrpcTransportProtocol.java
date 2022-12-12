@@ -1,4 +1,4 @@
-package tong.trpc.core.io.protocol;
+package tong.trpc.core.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package tong.trpc.core.io.protocol;
+package tong.trpc.core.io.handler;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -8,6 +8,8 @@ import tong.trpc.core.domain.TrpcConstant;
 import tong.trpc.core.domain.TrpcRequest;
 import tong.trpc.core.domain.TrpcRequestType;
 import tong.trpc.core.domain.TrpcResponse;
+import tong.trpc.core.domain.TrpcTransportProtocol;
+import tong.trpc.core.domain.TrpcTransportProtocolHeader;
 import tong.trpc.core.io.serialize.ITrpcSerializer;
 import tong.trpc.core.io.serialize.TrpcSerializerManager;
 
@@ -45,6 +47,7 @@ public class TrpcDecoder extends ByteToMessageDecoder {
         TrpcTransportProtocolHeader header = new TrpcTransportProtocolHeader(maci, serialType, reqType, requestId, dataLength);
         ITrpcSerializer serializer = TrpcSerializerManager.getSerializer(serialType);//获得序列化类型
         TrpcRequestType rt = TrpcRequestType.findByCode(reqType);//获得请求类型
+        log.info(serializer.getClass().getName() + "deserialize...");
         switch (rt) {
             case REQUEST:
                 // 将内容反序列化

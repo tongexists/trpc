@@ -2,7 +2,7 @@ package tong.provider.test;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import tong.trpc.core.io.server.TrpcServer;
+import tong.trpc.core.io.TrpcServer;
 
 @SpringBootApplication(scanBasePackages = {"common.api.service", "tong.provider.test", "tong.trpc"})
 public class ProviderApp {

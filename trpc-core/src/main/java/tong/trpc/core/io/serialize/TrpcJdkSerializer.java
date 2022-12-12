@@ -1,22 +1,19 @@
 package tong.trpc.core.io.serialize;
 
+import tong.trpc.core.util.JdkSerializerUtil;
+
 import java.io.*;
 
 public class TrpcJdkSerializer implements ITrpcSerializer {
 
     @Override
     public <T> byte[] serialize(T obj) throws IOException {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = null;
-        oos = new ObjectOutputStream(bos);
-        oos.writeObject(obj); //序列化
-        return bos.toByteArray();
+        return JdkSerializerUtil.serialize(obj);
     }
 
     @Override
     public <T> T deserialize(byte[] data, Class<T> clazz) throws IOException, ClassNotFoundException {
-        ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
-        return (T) ois.readObject();
+        return JdkSerializerUtil.deserialize(data, clazz);
     }
 
 

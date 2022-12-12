@@ -1,13 +1,16 @@
-package tong.trpc.core.io.protocol;
+package tong.trpc.core.io.handler;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
+import lombok.extern.slf4j.Slf4j;
 import tong.trpc.core.domain.TrpcRequest;
-import tong.trpc.core.domain.TrpcRequestType;
+import tong.trpc.core.domain.TrpcTransportProtocol;
+import tong.trpc.core.domain.TrpcTransportProtocolHeader;
 import tong.trpc.core.io.serialize.ITrpcSerializer;
 import tong.trpc.core.io.serialize.TrpcSerializerManager;
 
+@Slf4j
 public class TrpcEncoder extends MessageToByteEncoder<TrpcTransportProtocol<TrpcRequest>> {
     @Override
     protected void encode(ChannelHandlerContext ctx, TrpcTransportProtocol msg, ByteBuf out) throws Exception {
@@ -18,6 +21,7 @@ public class TrpcEncoder extends MessageToByteEncoder<TrpcTransportProtocol<Trpc
         out.writeLong(header.getRequestId());
         // 序列化内容
         ITrpcSerializer serializer = TrpcSerializerManager.getSerializer(header.getSerialType());
+        log.info(serializer.getClass().getName() + "serialize...");
         byte[] data = null;
         data = serializer.serialize(msg.getContent());
         out.writeInt(data.length);
