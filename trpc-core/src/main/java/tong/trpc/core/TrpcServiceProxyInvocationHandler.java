@@ -24,6 +24,7 @@ public class TrpcServiceProxyInvocationHandler implements InvocationHandler {
         trpcInvocation.setMethodName(method.getName());
         trpcInvocation.setParams(args);
         trpcInvocation.setParamsTypes(method.getParameterTypes());
+
         return trpcInvocation;
     }
 

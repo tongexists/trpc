@@ -1,3 +1,5 @@
+import org.junit.jupiter.api.Test;
+
 /**
  * @Author tong-exists
  * @Create 2022/12/11 16:55
@@ -5,7 +7,8 @@
  */
 public class MyTest01 {
 
-    public static void main(String[] args) {
+    @Test
+    public void test() {
 
     }
 

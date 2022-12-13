@@ -41,8 +41,8 @@ public class TrpcClient {
                                                 4,
                                                 0, 0))
                                 .addLast(new LoggingHandler()) // 日志处理
-                                .addLast(new TrpcEncoder())
                                 .addLast(new TrpcDecoder())
+                                .addLast(new TrpcEncoder())
                                 .addLast(new TrpcClientHandler())
                                 .addLast(new ExceptionHandler());
                     }

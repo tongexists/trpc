@@ -9,7 +9,6 @@ import java.util.concurrent.CompletableFuture;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class TrpcFutureDecorator {
 
     private CompletableFuture<TrpcResponse> responseFuture;

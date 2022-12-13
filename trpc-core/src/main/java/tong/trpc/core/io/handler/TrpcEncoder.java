@@ -21,7 +21,7 @@ public class TrpcEncoder extends MessageToByteEncoder<TrpcTransportProtocol<Trpc
         out.writeLong(header.getRequestId());
         // 序列化内容
         ITrpcSerializer serializer = TrpcSerializerManager.getSerializer(header.getSerialType());
-        log.info(serializer.getClass().getName() + "serialize...");
+        log.info(serializer.getClass().getName() + " serialize...");
         byte[] data = null;
         data = serializer.serialize(msg.getContent());
         out.writeInt(data.length);

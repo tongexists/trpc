@@ -48,8 +48,10 @@ public class JacksonXmlSerializerTest {
         log.info(s);
         TrpcRequest request1 = JacksonXmlSerializerUtil.xmlToObj(s, TrpcRequest.class);
         log.info(String.valueOf(request));
-        Student stu = (Student) request1.getParams()[0];
-        log.info(String.valueOf(stu));
+        Class<?> stuClass = Class.forName(request1.getParamsTypes()[0]);
+        Object o = JacksonXmlSerializerUtil.xmlToObj(JacksonXmlSerializerUtil.objToXml(request1.getParams()[0]), stuClass);
+
+        log.info(String.valueOf(o));
         log.info(String.valueOf(request1));
 
 

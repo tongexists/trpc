@@ -2,6 +2,8 @@ package tong.trpc.core.util;
 
 
 import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONReader;
+import com.alibaba.fastjson2.JSONWriter;
 
 /**
  * @Author tong-exists
@@ -19,7 +21,7 @@ public class FastjsonSerializerUtil {
      * @return
      */
     public static <T> T fromJsonToObject(String jsonObj, Class<T> clazz) {
-        return JSON.parseObject(jsonObj, clazz);
+        return JSON.parseObject(jsonObj, clazz, JSONReader.Feature.SupportAutoType);
     }
 
 
@@ -31,6 +33,6 @@ public class FastjsonSerializerUtil {
      * @return
      */
     public static <T> String objectToJson(T obj) {
-        return JSON.toJSONString(obj);
+        return JSON.toJSONString(obj, JSONWriter.Feature.WriteClassName, JSONWriter.Feature.NotWriteRootClassName);
     }
 }

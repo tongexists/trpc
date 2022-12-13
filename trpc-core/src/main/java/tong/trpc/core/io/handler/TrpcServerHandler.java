@@ -17,14 +17,10 @@ public class TrpcServerHandler extends SimpleChannelInboundHandler<TrpcTransport
         TrpcTransportProtocolHeader header = msg.getHeader();
         header.setRequestType(TrpcRequestType.RESPONSE.getCode());
         // 通过反射调用对应方法
-        Object result = invoke(msg.getContent());
+        TrpcResponse response = invoke(msg.getContent());
 
         resProtocol.setHeader(header);
 
-        TrpcResponse response = new TrpcResponse();
-        response.setCode(TrpcResponseCode.SUCCESS.getCode());
-        response.setData(result);
-        response.setMsg("success");
 
         resProtocol.setContent(response);
 
@@ -32,7 +28,7 @@ public class TrpcServerHandler extends SimpleChannelInboundHandler<TrpcTransport
     }
 
     // 通过反射进行调用
-    private Object invoke(TrpcRequest request) {
+    private TrpcResponse invoke(TrpcRequest request) {
         try {
             // 反射加载
             Class<?> clazz = Class.forName(request.getClassName());
@@ -48,7 +44,13 @@ public class TrpcServerHandler extends SimpleChannelInboundHandler<TrpcTransport
             }).toArray(Class[]::new);
             Method method = clazz.getDeclaredMethod(request.getMethodName(), paramTypes);
             // 通过反射调用
-            return method.invoke(bean, request.getParams());
+            Object result =  method.invoke(bean, request.getParams());
+            TrpcResponse response = new TrpcResponse();
+            response.setCode(TrpcResponseCode.SUCCESS.getCode());
+            response.setData(result);
+            response.setMsg("success");
+            response.setReturnType(method.getReturnType().getTypeName());
+            return response;
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (NoSuchMethodException e) {

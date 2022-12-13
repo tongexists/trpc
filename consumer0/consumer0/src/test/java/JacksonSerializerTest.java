@@ -48,8 +48,7 @@ public class JacksonSerializerTest {
         TrpcRequest request1 = JacksonSerializerUtil.jsonToObject(s, TrpcRequest.class);
         log.info(String.valueOf(request));
         log.info(String.valueOf(request1));
-        Student stu = (Student) request1.getParams()[0];
-        log.info(String.valueOf(stu));
+
 
     }
 

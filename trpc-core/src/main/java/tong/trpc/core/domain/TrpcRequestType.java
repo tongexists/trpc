@@ -1,12 +1,12 @@
 package tong.trpc.core.domain;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
+
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 public enum TrpcRequestType {
     REQUEST((byte) 1),

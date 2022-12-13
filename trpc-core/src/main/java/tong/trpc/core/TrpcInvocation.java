@@ -74,6 +74,7 @@ public class TrpcInvocation<T> {
                 TrpcConstant.MAGIC, this.serialType.getCode(), TrpcRequestType.REQUEST.getCode(),
                 requestId, 0);
 
+
         this.requestProtocol = new TrpcTransportProtocol<>();
         this.requestProtocol.setHeader(header);
         this.requestProtocol.setContent(request);

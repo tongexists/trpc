@@ -5,8 +5,10 @@ import tong.trpc.core.TrpcInvocation;
 import tong.trpc.core.annotation.TrpcService;
 import tong.trpc.core.io.serialize.TrpcSerialType;
 
+import java.util.List;
 
-@TrpcService(serviceInstanceName = "helloService", serialType = TrpcSerialType.TrpcFstSerializer)
+
+@TrpcService(serviceInstanceName = "helloService", serialType = TrpcSerialType.TrpcGsonSerializer)
 public interface HelloService {
 
     TrpcInvocation<Void> helloWithoutResult(String name);
@@ -14,4 +16,6 @@ public interface HelloService {
     TrpcInvocation<String> helloWithResult(String name);
 
     TrpcInvocation<Student> helloStudent(Student p);
+
+    TrpcInvocation<List<Student>> zzz();
 }

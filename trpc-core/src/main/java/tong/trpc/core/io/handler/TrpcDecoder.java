@@ -47,7 +47,7 @@ public class TrpcDecoder extends ByteToMessageDecoder {
         TrpcTransportProtocolHeader header = new TrpcTransportProtocolHeader(maci, serialType, reqType, requestId, dataLength);
         ITrpcSerializer serializer = TrpcSerializerManager.getSerializer(serialType);//获得序列化类型
         TrpcRequestType rt = TrpcRequestType.findByCode(reqType);//获得请求类型
-        log.info(serializer.getClass().getName() + "deserialize...");
+        log.info(serializer.getClass().getName() + " deserialize...");
         switch (rt) {
             case REQUEST:
                 // 将内容反序列化

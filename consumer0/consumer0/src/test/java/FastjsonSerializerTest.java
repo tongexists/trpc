@@ -45,11 +45,11 @@ public class FastjsonSerializerTest {
         request.setParamsTypes(new String[]{Student.class.getName()});
 
         String s = FastjsonSerializerUtil.objectToJson(request);
+        log.info(s);
         TrpcRequest request1 = FastjsonSerializerUtil.fromJsonToObject(s, TrpcRequest.class);
         log.info(String.valueOf(request));
         log.info(String.valueOf(request1));
-        Student stu = (Student) request1.getParams()[0];
-        log.info(String.valueOf(stu));
+
 
     }
 
