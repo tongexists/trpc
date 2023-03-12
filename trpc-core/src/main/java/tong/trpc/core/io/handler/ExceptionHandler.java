@@ -13,16 +13,29 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ExceptionHandler extends ChannelDuplexHandler {
 
+    /**
+     * exceptionCaught是用来捕获Inbound抛出的异常
+     * @param ctx
+     * @param cause
+     * @throws Exception
+     */
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        log.error("",cause);
+        log.error("捕获到入站异常",cause);
     }
 
+    /**
+     * 重写write是用来捕获outbound抛出的异常
+     * @param ctx
+     * @param msg
+     * @param promise
+     * @throws Exception
+     */
     @Override
     public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
         ctx.write(msg, promise.addListener( future -> {
             if (!future.isSuccess()){
-                log.error("",future.cause());
+                log.error("捕获出站到异常",future.cause());
             }
         }));
     }

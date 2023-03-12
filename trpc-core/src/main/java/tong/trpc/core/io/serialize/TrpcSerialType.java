@@ -15,9 +15,9 @@ public enum TrpcSerialType {
     TrpcProtostuffSerializer((byte) 1, "TrpcProtostuffSerializer"),
     TrpcKryoSerializer((byte) 2, "TrpcKryoSerializer"),
     TrpcFstSerializer((byte) 3, "TrpcFstSerializer"),
-    TrpcJacksonSerializer((byte) 4, "TrpcJacksonSerializer"),
-    TrpcFastjsonSerializer((byte) 5, "TrpcFastjsonSerializer"),
-    TrpcGsonSerializer((byte) 6, "TrpcGsonSerializer");
+
+    TrpcFastjsonSerializer((byte) 5, "TrpcFastjsonSerializer");
+
     private final byte code;
     private final String name;
 

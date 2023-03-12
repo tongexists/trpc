@@ -41,7 +41,7 @@ public class TrpcKryoSerializerTest {
         request.setClassName("setClassName");
         request.setMethodName("setMethodName");
         request.setParams(new Object[]{student});
-        request.setParamsTypes(new String[]{Student.class.getName()});
+        request.setParamsTypes(new Class<?>[]{Student.class});
 
         byte[] serialize = KryoSerializerUtil.serialize(request);
         TrpcRequest deserialize = KryoSerializerUtil.deserialize(serialize, TrpcRequest.class);

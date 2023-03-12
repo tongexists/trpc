@@ -13,7 +13,7 @@ import java.nio.charset.StandardCharsets;
  */
 public class TrpcFastjsonSerializer implements ITrpcSerializer{
     @Override
-    public <T> byte[] serialize(T obj) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, IOException {
+    public byte[] serialize(Object obj) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, IOException {
         return FastjsonSerializerUtil.objectToJson(obj).getBytes(StandardCharsets.UTF_8);
     }
 

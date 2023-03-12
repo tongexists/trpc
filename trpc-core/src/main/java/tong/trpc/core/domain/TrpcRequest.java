@@ -1,17 +1,15 @@
 package tong.trpc.core.domain;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import tong.trpc.core.io.serialize.jackson.TrpcRequestJacksonDeserializer;
 
 import java.io.Serializable;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonDeserialize(using = TrpcRequestJacksonDeserializer.class)
+
 public class TrpcRequest implements Serializable {
 
     private String className; // 类名
@@ -20,7 +18,7 @@ public class TrpcRequest implements Serializable {
 
     private Object[] params; // 请求参数
 
-    private String[] paramsTypes; // 参数类型
+    private Class<?>[] paramsTypes; // 参数类型
 
 
 

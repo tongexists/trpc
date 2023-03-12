@@ -2,6 +2,7 @@ package tong.consumer.test.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.Map;
  */
 @Data
 @NoArgsConstructor
-
+@Slf4j
 public class Student implements Serializable {
 
     private String name;
@@ -23,5 +24,13 @@ public class Student implements Serializable {
     private String[] likes;
     private List<Student> friends;
     private Map<String, String> scoreMap;
+
+    public void hello() {
+        log.info("hello...");
+    }
+
+    public void world() {
+        log.info("world...");
+    }
 
 }

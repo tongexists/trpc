@@ -7,7 +7,7 @@ public interface ITrpcSerializer {
     /*
    序列化接口
     */
-    <T> byte[] serialize(T obj) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, IOException;
+    byte[] serialize(Object obj) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, IOException;
 
     /*
     反序列化接口

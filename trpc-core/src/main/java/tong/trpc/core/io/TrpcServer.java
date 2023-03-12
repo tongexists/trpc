@@ -8,17 +8,24 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
+import tong.trpc.core.domain.TrpcConstant;
 import tong.trpc.core.io.handler.ExceptionHandler;
 import tong.trpc.core.io.handler.TrpcDecoder;
 import tong.trpc.core.io.handler.TrpcEncoder;
 import tong.trpc.core.io.handler.TrpcServerHandler;
 
+import java.util.concurrent.TimeUnit;
+
 @Slf4j
 public class TrpcServer {
 
-    private String serverAddress; //服务地址
-    private int serverPort; //端口
+    //服务地址
+    private String serverAddress;
+    //端口
+    private int serverPort;
 
     public TrpcServer(String serverAddress, int serverPort) {
         this.serverAddress = serverAddress;
@@ -26,7 +33,7 @@ public class TrpcServer {
     }
 
     public void startNettyServer() {
-        log.info("begin start Netty server");
+        log.debug("begin start Netty server");
         EventLoopGroup boss = new NioEventLoopGroup();
         EventLoopGroup worker = new NioEventLoopGroup();
 
@@ -43,6 +50,8 @@ public class TrpcServer {
                                         4,
                                         0,
                                         0))
+                                .addLast(new LoggingHandler())
+                                .addLast(new IdleStateHandler(TrpcConstant.IDLE_THRESHOLD, 0, 0, TimeUnit.SECONDS))
                                 .addLast(new TrpcDecoder())
                                 .addLast(new TrpcEncoder())
                                 .addLast(new TrpcServerHandler())

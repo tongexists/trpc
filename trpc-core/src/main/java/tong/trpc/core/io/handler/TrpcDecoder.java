@@ -4,12 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import lombok.extern.slf4j.Slf4j;
-import tong.trpc.core.domain.TrpcConstant;
-import tong.trpc.core.domain.TrpcRequest;
-import tong.trpc.core.domain.TrpcRequestType;
-import tong.trpc.core.domain.TrpcResponse;
-import tong.trpc.core.domain.TrpcTransportProtocol;
-import tong.trpc.core.domain.TrpcTransportProtocolHeader;
+import tong.trpc.core.domain.*;
 import tong.trpc.core.io.serialize.ITrpcSerializer;
 import tong.trpc.core.io.serialize.TrpcSerializerManager;
 
@@ -20,7 +15,7 @@ public class TrpcDecoder extends ByteToMessageDecoder {
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
-        log.info("========begin RpcDecoder==========");
+        log.debug("========begin RpcDecoder==========");
 
         if (in.readableBytes() < TrpcConstant.HEAD_TOTAL_LEN) {
             return;
@@ -47,7 +42,7 @@ public class TrpcDecoder extends ByteToMessageDecoder {
         TrpcTransportProtocolHeader header = new TrpcTransportProtocolHeader(maci, serialType, reqType, requestId, dataLength);
         ITrpcSerializer serializer = TrpcSerializerManager.getSerializer(serialType);//获得序列化类型
         TrpcRequestType rt = TrpcRequestType.findByCode(reqType);//获得请求类型
-        log.info(serializer.getClass().getName() + " deserialize...");
+        log.debug(serializer.getClass().getName() + " deserialize...");
         switch (rt) {
             case REQUEST:
                 // 将内容反序列化
@@ -67,7 +62,6 @@ public class TrpcDecoder extends ByteToMessageDecoder {
                 out.add(resProtocol);
                 break;
             case HEARTBEAT:
-                //TODO
                 break;
             default:
                 break;

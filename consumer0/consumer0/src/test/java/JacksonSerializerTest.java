@@ -2,7 +2,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import tong.consumer.test.model.Student;
 import tong.trpc.core.domain.TrpcRequest;
-import tong.trpc.core.util.JacksonSerializerUtil;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -42,7 +41,7 @@ public class JacksonSerializerTest {
         request.setClassName("setClassName");
         request.setMethodName("setMethodName");
         request.setParams(new Object[]{student});
-        request.setParamsTypes(new String[]{Student.class.getName()});
+        request.setParamsTypes(new Class<?>[]{Student.class});
 
         String s = JacksonSerializerUtil.objectToJson(request);
         TrpcRequest request1 = JacksonSerializerUtil.jsonToObject(s, TrpcRequest.class);

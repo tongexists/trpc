@@ -7,7 +7,7 @@ import java.io.*;
 public class TrpcJdkSerializer implements ITrpcSerializer {
 
     @Override
-    public <T> byte[] serialize(T obj) throws IOException {
+    public byte[] serialize(Object obj) throws IOException {
         return JdkSerializerUtil.serialize(obj);
     }
 

@@ -8,7 +8,7 @@ import tong.trpc.core.io.serialize.TrpcSerialType;
 import java.util.List;
 
 
-@TrpcService(serviceInstanceName = "helloService", serialType = TrpcSerialType.TrpcGsonSerializer)
+@TrpcService(serviceInstanceName = "hello-service", serialType = TrpcSerialType.TrpcFastjsonSerializer)
 public interface HelloService {
 
     TrpcInvocation<Void> helloWithoutResult(String name);

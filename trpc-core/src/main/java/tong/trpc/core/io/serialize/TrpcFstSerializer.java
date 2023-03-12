@@ -12,7 +12,7 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class TrpcFstSerializer implements ITrpcSerializer{
     @Override
-    public <T> byte[] serialize(T obj) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, IOException {
+    public byte[] serialize(Object obj) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, IOException {
         return FstSerializerUtil.serialize(obj);
     }
 

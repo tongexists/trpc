@@ -16,7 +16,7 @@ public class TrpcProtostuffSerializer implements ITrpcSerializer{
 
 
     @Override
-    public <T> byte[] serialize(T obj) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, IOException {
+    public byte[] serialize(Object obj) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, IOException {
         return ProtostuffSerializerUtil.serialize(obj);
     }
 

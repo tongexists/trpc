@@ -3,6 +3,10 @@ package tong.trpc.core.util;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
+import tong.trpc.core.domain.TrpcRequest;
+import tong.trpc.core.domain.TrpcResponse;
+import tong.trpc.core.domain.TrpcTransportProtocol;
+import tong.trpc.core.domain.TrpcTransportProtocolHeader;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -18,12 +22,17 @@ public class KryoSerializerUtil {
         @Override
         protected Kryo initialValue() {
             Kryo kryo = new Kryo();
+            kryo.register(TrpcRequest.class);
+            kryo.register(TrpcResponse.class);
+            kryo.register(TrpcTransportProtocol.class);
+            kryo.register(TrpcTransportProtocolHeader.class);
+            kryo.setReferences(true);
             kryo.setRegistrationRequired(false);
             return kryo;
         }
     };
 
-    private static final int OUTPUT_BUFFER_SIZE = 1024;
+    private static final int OUTPUT_BUFFER_SIZE = 1024 * 1024 * 2;
 
     private static ThreadLocal<Output> outputThreadLocal = new ThreadLocal() {
         @Override
@@ -32,7 +41,7 @@ public class KryoSerializerUtil {
         }
     };
 
-    private static final int INPUT_BUFFER_SIZE = 1024;
+    private static final int INPUT_BUFFER_SIZE = 1024 * 1024 * 2;
 
     private static ThreadLocal<Input> inputThreadLocal = new ThreadLocal() {
         @Override

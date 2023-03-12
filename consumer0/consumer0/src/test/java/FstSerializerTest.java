@@ -41,8 +41,8 @@ public class FstSerializerTest {
         request.setClassName("setClassName");
         request.setMethodName("setMethodName");
         request.setParams(new Object[]{student});
-//        request.setParamsTypes(new String[]{Student.class.getName()});
-        request.setParamsTypes(new String[]{Student.class.getName()});
+//        request.setParamsTypes(new Class<?>[]{Student.class});
+        request.setParamsTypes(new Class<?>[]{Student.class});
 
         byte[] serialize = FstSerializerUtil.serialize(request);
         TrpcRequest deserialize = FstSerializerUtil.deserialize(serialize);

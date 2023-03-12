@@ -42,7 +42,7 @@ public class FastjsonSerializerTest {
         request.setClassName("setClassName");
         request.setMethodName("setMethodName");
         request.setParams(new Object[]{student});
-        request.setParamsTypes(new String[]{Student.class.getName()});
+        request.setParamsTypes(new Class<?>[]{Student.class});
 
         String s = FastjsonSerializerUtil.objectToJson(request);
         log.info(s);

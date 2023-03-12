@@ -1,13 +1,10 @@
 package tong.trpc.core.io.serialize;
 
 import lombok.extern.slf4j.Slf4j;
-import tong.trpc.core.domain.TrpcRequest;
 import tong.trpc.core.util.KryoSerializerUtil;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @Author tong-exists
@@ -19,7 +16,7 @@ public class TrpcKryoSerializer implements ITrpcSerializer {
 
 
     @Override
-    public <T> byte[] serialize(T obj) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, IOException {
+    public byte[] serialize(Object obj) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, IOException {
         return KryoSerializerUtil.serialize(obj);
     }
 

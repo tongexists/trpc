@@ -41,7 +41,7 @@ public class TrpcJdkSerializerTest {
         request.setClassName("setClassName");
         request.setMethodName("setMethodName");
         request.setParams(new Object[]{student});
-        request.setParamsTypes(new String[]{Student.class.getName()});
+        request.setParamsTypes(new Class<?>[]{Student.class});
 
         byte[] serialize = JdkSerializerUtil.serialize(request);
         TrpcRequest deserialize = JdkSerializerUtil.deserialize(serialize, TrpcRequest.class);

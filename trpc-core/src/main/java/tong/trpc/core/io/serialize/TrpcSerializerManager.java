@@ -8,8 +8,7 @@ public class TrpcSerializerManager {
 
     static {
         ITrpcSerializer[] serializers = new ITrpcSerializer[]{ new TrpcJdkSerializer(), new TrpcProtostuffSerializer(),
-            new TrpcKryoSerializer(), new TrpcFstSerializer(), new TrpcJacksonSerializer(), new TrpcFastjsonSerializer(),
-                new TrpcGsonSerializer()
+            new TrpcKryoSerializer(), new TrpcFstSerializer(), new TrpcFastjsonSerializer()
         };
         for (ITrpcSerializer serializer : serializers) {
             type2Serializer.put(serializer.getType(), serializer);

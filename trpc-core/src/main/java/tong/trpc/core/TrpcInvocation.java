@@ -9,7 +9,6 @@ import tong.trpc.core.domain.*;
 import tong.trpc.core.io.TrpcClient;
 import tong.trpc.core.io.serialize.TrpcSerialType;
 
-import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
@@ -63,17 +62,16 @@ public class TrpcInvocation<T> {
     private TrpcSerialType serialType;
 
     private void sendRequest() throws InterruptedException {
-        TrpcClient client = new TrpcClient("127.0.0.1", 9000);
         this.requestId = TrpcRequestHolder.REQUEST_ID.incrementAndGet();
         this.request = new TrpcRequest();
         this.request.setClassName(this.serviceInterfaceName);
         this.request.setMethodName(this.methodName);
-        this.request.setParamsTypes(Arrays.stream(this.paramsTypes).map(Class::getName).toArray(String[]::new));
+        this.request.setParamsTypes(this.paramsTypes);
+//        this.request.setParamsTypes(Arrays.stream(this.paramsTypes).map(Class::getName).toArray(String[]::new));
         this.request.setParams(this.params);
         TrpcTransportProtocolHeader header = new TrpcTransportProtocolHeader(
                 TrpcConstant.MAGIC, this.serialType.getCode(), TrpcRequestType.REQUEST.getCode(),
                 requestId, 0);
-
 
         this.requestProtocol = new TrpcTransportProtocol<>();
         this.requestProtocol.setHeader(header);
@@ -82,7 +80,7 @@ public class TrpcInvocation<T> {
         this.responseFuture = new CompletableFuture<>();
         TrpcRequestHolder.REQUEST_MAP.put(requestId, new TrpcFutureDecorator(this.responseFuture));
         this.isInvoked = true;
-        client.sendRequest(this.requestProtocol);
+        TrpcClient.sendRequest(this.requestProtocol, this.serviceInstanceName);
     }
 
     public T sync() {
@@ -93,11 +91,15 @@ public class TrpcInvocation<T> {
             if (trpcResponse.getCode() == TrpcResponseCode.ERROR.getCode()) {
                 throw new RuntimeException("调用发生错误" + trpcResponse.toString());
             }
-            return (T) trpcResponse.getData();
+            return dealDifferenceBetweenClassloader(trpcResponse.getData());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
+    }
+
+    private T dealDifferenceBetweenClassloader(Object raw) {
+        return (T)raw;
     }
 
     public CompletableFuture<T> future() {
@@ -113,7 +115,7 @@ public class TrpcInvocation<T> {
                 if (trpcResponse.getCode() == TrpcResponseCode.ERROR.getCode()) {
                     future.completeExceptionally(new RuntimeException("调用失败"));
                 } else if (trpcResponse.getCode() == TrpcResponseCode.SUCCESS.getCode()) {
-                    future.complete((T)trpcResponse.getData());
+                    future.complete(dealDifferenceBetweenClassloader(trpcResponse.getData()));
                 } else {
                     future.completeExceptionally(new RuntimeException("调用失败"));
                 }
@@ -135,7 +137,7 @@ public class TrpcInvocation<T> {
                 if (trpcResponse.getCode() == TrpcResponseCode.ERROR.getCode()) {
                     callBack.onFailure(new RuntimeException("调用失败"));
                 } else if (trpcResponse.getCode() == TrpcResponseCode.SUCCESS.getCode()) {
-                    callBack.onSuccess((T)trpcResponse.getData());
+                    callBack.onSuccess(dealDifferenceBetweenClassloader(trpcResponse.getData()));
                 } else {
                     callBack.onFailure(new RuntimeException("调用失败"));
                 }

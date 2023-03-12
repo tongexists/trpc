@@ -20,4 +20,12 @@ public class HelloTest {
         log.info(method.getReturnType().getTypeName());
         log.info(method.getReturnType().getCanonicalName());
     }
+
+    @Test
+    public void test2() throws NoSuchMethodException, ClassNotFoundException {
+        String a = "22";
+        Object b = a;
+        String c = (String) b;
+        System.out.println(c);
+    }
 }

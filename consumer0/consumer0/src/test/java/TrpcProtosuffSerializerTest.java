@@ -41,7 +41,7 @@ public class TrpcProtosuffSerializerTest {
         request.setClassName("setClassName");
         request.setMethodName("setMethodName");
         request.setParams(new Object[]{student});
-        request.setParamsTypes(new String[]{Student.class.getName()});
+        request.setParamsTypes(new Class<?>[]{Student.class});
 
         byte[] serialize = ProtostuffSerializerUtil.serialize(request);
         TrpcRequest deserialize = ProtostuffSerializerUtil.deserialize(serialize, TrpcRequest.class);

@@ -21,7 +21,7 @@ public class FastjsonSerializerUtil {
      * @return
      */
     public static <T> T fromJsonToObject(String jsonObj, Class<T> clazz) {
-        return JSON.parseObject(jsonObj, clazz, JSONReader.Feature.SupportAutoType);
+        return JSON.parseObject(jsonObj, clazz, JSONReader.Feature.SupportAutoType, JSONReader.Feature.SupportClassForName);
     }
 
 

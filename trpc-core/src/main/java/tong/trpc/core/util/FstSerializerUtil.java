@@ -37,7 +37,8 @@ public class FstSerializerUtil {
      * @return
      */
     public static <T> T deserialize(byte[] sec) {
-        return (T)getFST().asObject(sec);
+        Object o = getFST().asObject(sec);
+        return (T) o;
     }
 
 }

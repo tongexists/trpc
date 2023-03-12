@@ -2,13 +2,15 @@ package tong.trpc.core.io.handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.handler.timeout.IdleState;
+import io.netty.handler.timeout.IdleStateEvent;
+import lombok.extern.slf4j.Slf4j;
 import tong.trpc.core.domain.*;
 import tong.trpc.core.spring.SpringBeanManager;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 
+@Slf4j
 public class TrpcServerHandler extends SimpleChannelInboundHandler<TrpcTransportProtocol<TrpcRequest>> {
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TrpcTransportProtocol<TrpcRequest> msg) throws Exception {
@@ -35,14 +37,7 @@ public class TrpcServerHandler extends SimpleChannelInboundHandler<TrpcTransport
             // 加载实例
             Object bean = SpringBeanManager.getBean(clazz);
             // 加载实例调用的方法
-            Class<?>[] paramTypes = Arrays.stream(request.getParamsTypes()).map(clsStr -> {
-                try {
-                    return Class.forName(clsStr);
-                } catch (ClassNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
-            }).toArray(Class[]::new);
-            Method method = clazz.getDeclaredMethod(request.getMethodName(), paramTypes);
+            Method method = bean.getClass().getDeclaredMethod(request.getMethodName(), request.getParamsTypes());
             // 通过反射调用
             Object result =  method.invoke(bean, request.getParams());
             TrpcResponse response = new TrpcResponse();
@@ -51,15 +46,24 @@ public class TrpcServerHandler extends SimpleChannelInboundHandler<TrpcTransport
             response.setMsg("success");
             response.setReturnType(method.getReturnType().getTypeName());
             return response;
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            log.error("", e);
+            TrpcResponse response = new TrpcResponse();
+            response.setCode(TrpcResponseCode.ERROR.getCode());
+            response.setMsg(e.getMessage());
+            return response;
         }
-        return null;
+    }
+
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+        if (evt instanceof IdleStateEvent){
+            IdleStateEvent event = (IdleStateEvent)evt;
+            if (event.state()== IdleState.READER_IDLE){
+                log.info(String.format("客户端[%s]超过指定时间未通信，关闭通道", ctx.channel().remoteAddress().toString()));
+                ctx.channel().close();
+            }
+        }
+        ctx.fireUserEventTriggered(evt);
     }
 }
