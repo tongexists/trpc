@@ -9,7 +9,7 @@ import java.util.List;
 
 
 @TrpcService(serviceInstanceName = "hello-service", serialType = TrpcSerialType.TrpcFastjsonSerializer)
-public interface HelloService {
+public interface TrpcHelloService {
 
     TrpcInvocation<Void> helloWithoutResult(String name);
 
@@ -18,4 +18,7 @@ public interface HelloService {
     TrpcInvocation<Student> helloStudent(Student p);
 
     TrpcInvocation<List<Student>> zzz();
+
+    TrpcInvocation<String> callEchoService(int a, Student p);
+
 }

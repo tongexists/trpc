@@ -44,6 +44,7 @@ public class TrpcServer {
 
                     @Override
                     protected void initChannel(SocketChannel socketChannel) throws Exception {
+
                         socketChannel.pipeline().
                                 addLast(new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE,
                                         12,

@@ -17,6 +17,6 @@ public @interface TrpcService {
 
     String name() default "";
 
-    TrpcSerialType serialType() default TrpcSerialType.TrpcJdkSerializer;
+    TrpcSerialType serialType() default TrpcSerialType.TrpcKryoSerializer;
 
 }

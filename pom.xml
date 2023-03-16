@@ -7,6 +7,9 @@
     <groupId>org.example</groupId>
     <artifactId>rpc-test0-dependencies</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>provider1</module>
+    </modules>
     <packaging>pom</packaging>
 
     <properties>
@@ -21,10 +24,26 @@
         <gson.version>2.10</gson.version>
         <fastjson.version>2.0.20</fastjson.version>
         <curator.version>5.4.0</curator.version>
+        <brave.version>5.14.0</brave.version>
+        <zipkin-reporter.version>2.16.0</zipkin-reporter.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>io.zipkin.reporter2</groupId>
+                <artifactId>zipkin-reporter-bom</artifactId>
+                <version>${zipkin-reporter.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.zipkin.brave</groupId>
+                <artifactId>brave-bom</artifactId>
+                <version>${brave.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <!-- https://mvnrepository.com/artifact/org.apache.curator/curator-x-discovery -->
             <dependency>
                 <groupId>org.apache.curator</groupId>

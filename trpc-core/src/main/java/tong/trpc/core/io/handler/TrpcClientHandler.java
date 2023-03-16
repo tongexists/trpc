@@ -11,6 +11,9 @@ import tong.trpc.core.io.serialize.TrpcSerialType;
 @Slf4j
 public class TrpcClientHandler extends SimpleChannelInboundHandler<TrpcTransportProtocol<TrpcResponse>> {
 
+
+
+
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TrpcTransportProtocol<TrpcResponse> msg) throws Exception {
         log.debug("receive Rpc Server Result");

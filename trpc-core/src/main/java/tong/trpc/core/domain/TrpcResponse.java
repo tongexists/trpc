@@ -10,7 +10,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 
-public class TrpcResponse  implements Serializable {
+public class TrpcResponse implements Serializable {
 
     private Object data;
 
@@ -19,4 +19,7 @@ public class TrpcResponse  implements Serializable {
     private int code;
 
     private String returnType;
+
+    private long requestId; // 请求ID 8个字节
+
 }

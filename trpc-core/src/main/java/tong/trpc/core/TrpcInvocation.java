@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import tong.trpc.core.domain.*;
+import tong.trpc.core.filter.TrpcClientFilters;
 import tong.trpc.core.io.TrpcClient;
 import tong.trpc.core.io.serialize.TrpcSerialType;
 
@@ -67,7 +68,7 @@ public class TrpcInvocation<T> {
         this.request.setClassName(this.serviceInterfaceName);
         this.request.setMethodName(this.methodName);
         this.request.setParamsTypes(this.paramsTypes);
-//        this.request.setParamsTypes(Arrays.stream(this.paramsTypes).map(Class::getName).toArray(String[]::new));
+        this.request.setRequestId(requestId);
         this.request.setParams(this.params);
         TrpcTransportProtocolHeader header = new TrpcTransportProtocolHeader(
                 TrpcConstant.MAGIC, this.serialType.getCode(), TrpcRequestType.REQUEST.getCode(),
@@ -80,8 +81,10 @@ public class TrpcInvocation<T> {
         this.responseFuture = new CompletableFuture<>();
         TrpcRequestHolder.REQUEST_MAP.put(requestId, new TrpcFutureDecorator(this.responseFuture));
         this.isInvoked = true;
+        TrpcClientFilters.doFilter(this.request, this.responseFuture);
         TrpcClient.sendRequest(this.requestProtocol, this.serviceInstanceName);
     }
+
 
     public T sync() {
         try {

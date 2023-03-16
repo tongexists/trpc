@@ -12,4 +12,6 @@ public interface HelloService {
 
     Student helloStudent(Student p);
 
+    String callEchoService(int a, Student p);
+
 }

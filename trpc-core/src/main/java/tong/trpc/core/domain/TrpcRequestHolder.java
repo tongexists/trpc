@@ -1,5 +1,7 @@
 package tong.trpc.core.domain;
 
+import brave.propagation.TraceContext;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
@@ -16,4 +18,8 @@ public class TrpcRequestHolder {
      */
     public static final Map<Long, TrpcFutureDecorator> REQUEST_MAP = new ConcurrentHashMap<>();
 
+    /*
+    保存请求ID和trace上下文的关系
+     */
+    public static final Map<Long, TraceContext> TRACE_CONTEXT_MAP = new ConcurrentHashMap<>();
 }

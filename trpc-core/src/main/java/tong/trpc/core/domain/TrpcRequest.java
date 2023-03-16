@@ -5,12 +5,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-
-public class TrpcRequest implements Serializable {
+public class TrpcRequest  implements Serializable {
 
     private String className; // 类名
 
@@ -20,6 +20,15 @@ public class TrpcRequest implements Serializable {
 
     private Class<?>[] paramsTypes; // 参数类型
 
+    private HashMap<String, String> traceMap = new HashMap<>();
 
+    private long requestId; // 请求ID 8个字节
+
+    /**
+     * 注册中心服务实例的名称
+     */
+    private String serviceInstanceName;
+
+    private HashMap<String, Object> attributes = new HashMap<>();
 
 }
