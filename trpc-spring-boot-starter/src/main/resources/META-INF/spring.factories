@@ -1,0 +1,1 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=tong.trpc.springboot.TrpcAutoConfiguration

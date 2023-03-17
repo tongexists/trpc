@@ -1,7 +1,7 @@
 package tong.trpc.core.zipkin;
 
 import brave.rpc.RpcClientRequest;
-import tong.trpc.core.domain.TrpcRequest;
+import tong.trpc.core.domain.request.TrpcRequest;
 
 /**
  * @Author tong-exists
@@ -33,6 +33,6 @@ public class TrpcZipkinClientRequest extends RpcClientRequest {
 
     @Override
     protected void propagationField(String keyName, String value) {
-        this.trpcRequest.getTraceMap().put(keyName, value);
+        this.trpcRequest.getAttributes().put(keyName, value);
     }
 }

@@ -12,5 +12,5 @@ public class TrpcTransportProtocol<T> {
 
     private TrpcTransportProtocolHeader header;
 
-    private T content;
+    private TrpcTransportProtocolBody<T> body;
 }

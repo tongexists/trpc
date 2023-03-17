@@ -5,10 +5,13 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import lombok.extern.slf4j.Slf4j;
 import tong.trpc.core.domain.*;
+import tong.trpc.core.domain.request.TrpcRequest;
+import tong.trpc.core.domain.response.TrpcResponse;
 import tong.trpc.core.io.serialize.ITrpcSerializer;
 import tong.trpc.core.io.serialize.TrpcSerializerManager;
 
 import java.util.List;
+
 @Slf4j
 public class TrpcDecoder extends ByteToMessageDecoder {
 
@@ -41,25 +44,28 @@ public class TrpcDecoder extends ByteToMessageDecoder {
 
         TrpcTransportProtocolHeader header = new TrpcTransportProtocolHeader(maci, serialType, reqType, requestId, dataLength);
         ITrpcSerializer serializer = TrpcSerializerManager.getSerializer(serialType);//获得序列化类型
-        TrpcRequestType rt = TrpcRequestType.findByCode(reqType);//获得请求类型
+        TrpcMessageType rt = TrpcMessageType.findByCode(reqType);//获得请求类型
         log.debug(serializer.getClass().getName() + " deserialize...");
         switch (rt) {
             case REQUEST:
                 // 将内容反序列化
-                TrpcRequest request = serializer.deserialize(content, TrpcRequest.class);
+                TrpcTransportProtocolBody<TrpcRequest> request = serializer.deserialize(content, TrpcTransportProtocolBody.class);
                 // 最好的返回体
-                TrpcTransportProtocol<TrpcRequest> reqProtocol = new TrpcTransportProtocol();
+                TrpcTransportProtocol<TrpcRequest> reqProtocol = new TrpcTransportProtocol<>();
                 reqProtocol.setHeader(header);
-                reqProtocol.setContent(request);
+                reqProtocol.setBody(request);
                 // 传递
                 out.add(reqProtocol);
                 break;
             case RESPONSE:
-                TrpcResponse response = serializer.deserialize(content, TrpcResponse.class);
-                TrpcTransportProtocol<TrpcResponse> resProtocol = new TrpcTransportProtocol();
-                resProtocol.setHeader(header);
-                resProtocol.setContent(response);
-                out.add(resProtocol);
+                // 将内容反序列化
+                TrpcTransportProtocolBody<TrpcResponse> body = serializer.deserialize(content, TrpcTransportProtocolBody.class);
+                // 最好的返回体
+                TrpcTransportProtocol<TrpcResponse> reqProtocol222 = new TrpcTransportProtocol<>();
+                reqProtocol222.setHeader(header);
+                reqProtocol222.setBody(body);
+                // 传递
+                out.add(reqProtocol222);
                 break;
             case HEARTBEAT:
                 break;

@@ -22,7 +22,7 @@ public class TrpcEncoder extends MessageToByteEncoder<TrpcTransportProtocol> {
         ITrpcSerializer serializer = TrpcSerializerManager.getSerializer(header.getSerialType());
         log.debug(serializer.getClass().getName() + " serialize...");
         byte[] data = null;
-        data = serializer.serialize(msg.getContent());
+        data = serializer.serialize(msg.getBody());
         out.writeInt(data.length);
         out.writeBytes(data);
     }

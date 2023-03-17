@@ -6,6 +6,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import tong.trpc.core.domain.*;
+import tong.trpc.core.domain.request.TrpcRequest;
+import tong.trpc.core.domain.request.TrpcRequestImpl;
+import tong.trpc.core.domain.response.TrpcResponse;
 import tong.trpc.core.filter.TrpcClientFilters;
 import tong.trpc.core.io.TrpcClient;
 import tong.trpc.core.io.serialize.TrpcSerialType;
@@ -52,7 +55,7 @@ public class TrpcInvocation<T> {
 
     private long requestId;
 
-    private TrpcRequest request;
+    private TrpcRequest request = new TrpcRequestImpl();
 
     private TrpcResponse response;
 
@@ -62,21 +65,23 @@ public class TrpcInvocation<T> {
 
     private TrpcSerialType serialType;
 
-    private void sendRequest() throws InterruptedException {
+    private int requestType;
+
+    void sendRequest() throws InterruptedException {
         this.requestId = TrpcRequestHolder.REQUEST_ID.incrementAndGet();
-        this.request = new TrpcRequest();
+        this.request.setRequestType(this.requestType);
         this.request.setClassName(this.serviceInterfaceName);
         this.request.setMethodName(this.methodName);
         this.request.setParamsTypes(this.paramsTypes);
         this.request.setRequestId(requestId);
         this.request.setParams(this.params);
         TrpcTransportProtocolHeader header = new TrpcTransportProtocolHeader(
-                TrpcConstant.MAGIC, this.serialType.getCode(), TrpcRequestType.REQUEST.getCode(),
+                TrpcConstant.MAGIC, this.serialType.getCode(), TrpcMessageType.REQUEST.getCode(),
                 requestId, 0);
-
+        TrpcTransportProtocolBody<TrpcRequest> body = new TrpcTransportProtocolBody<>(request);
         this.requestProtocol = new TrpcTransportProtocol<>();
         this.requestProtocol.setHeader(header);
-        this.requestProtocol.setContent(request);
+        this.requestProtocol.setBody(body);
 
         this.responseFuture = new CompletableFuture<>();
         TrpcRequestHolder.REQUEST_MAP.put(requestId, new TrpcFutureDecorator(this.responseFuture));
@@ -85,6 +90,10 @@ public class TrpcInvocation<T> {
         TrpcClient.sendRequest(this.requestProtocol, this.serviceInstanceName);
     }
 
+    public TrpcMultipleInvocation<T> multipleCall(Object[]... paramsArr) {
+        this.requestType = TrpcRequestType.TRPC_MULTIPLE_REQUEST.getCode();
+        return new TrpcMultipleInvocation<>(this, paramsArr);
+    }
 
     public T sync() {
         try {

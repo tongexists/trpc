@@ -6,6 +6,8 @@ import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
 import tong.trpc.core.domain.*;
+import tong.trpc.core.domain.request.TrpcRequest;
+import tong.trpc.core.domain.response.TrpcResponse;
 import tong.trpc.core.filter.TrpcServerFilters;
 
 @Slf4j
@@ -17,11 +19,11 @@ public class TrpcServerHandler extends SimpleChannelInboundHandler<TrpcTransport
         TrpcTransportProtocol<TrpcResponse> resProtocol = new TrpcTransportProtocol<>();
         // 处理服务端返回对象
         TrpcTransportProtocolHeader header = msg.getHeader();
-        header.setRequestType(TrpcRequestType.RESPONSE.getCode());
-        TrpcResponse response = new TrpcResponse();
-        TrpcServerFilters.doFilter(msg.getContent(), response);
+        header.setRequestType(TrpcMessageType.RESPONSE.getCode());
+        TrpcResponse response = msg.getBody().getContent().newResponse();
+        TrpcServerFilters.doFilter(msg.getBody().getContent(), response);
         resProtocol.setHeader(header);
-        resProtocol.setContent(response);
+        resProtocol.setBody(new TrpcTransportProtocolBody<>(response));
         ctx.writeAndFlush(resProtocol);
     }
 

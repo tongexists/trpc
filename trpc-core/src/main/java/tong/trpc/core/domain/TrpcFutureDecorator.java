@@ -3,6 +3,7 @@ package tong.trpc.core.domain;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import tong.trpc.core.domain.response.TrpcResponse;
 
 import java.util.concurrent.CompletableFuture;
 

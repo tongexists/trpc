@@ -1,7 +1,7 @@
 package tong.trpc.core.zipkin;
 
 import brave.rpc.RpcClientResponse;
-import tong.trpc.core.domain.TrpcResponse;
+import tong.trpc.core.domain.response.TrpcResponse;
 
 /**
  * @Author tong-exists

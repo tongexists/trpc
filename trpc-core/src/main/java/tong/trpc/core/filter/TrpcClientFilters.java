@@ -1,7 +1,7 @@
 package tong.trpc.core.filter;
 
-import tong.trpc.core.domain.TrpcRequest;
-import tong.trpc.core.domain.TrpcResponse;
+import tong.trpc.core.domain.request.TrpcRequest;
+import tong.trpc.core.domain.response.TrpcResponse;
 import tong.trpc.core.zipkin.TrpcClientTracingInterceptor;
 import tong.trpc.core.zipkin.ZipkinHolder;
 

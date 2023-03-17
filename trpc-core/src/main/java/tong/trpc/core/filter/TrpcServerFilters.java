@@ -2,8 +2,8 @@ package tong.trpc.core.filter;
 
 import brave.Tracing;
 import brave.rpc.RpcTracing;
-import tong.trpc.core.domain.TrpcRequest;
-import tong.trpc.core.domain.TrpcResponse;
+import tong.trpc.core.domain.request.TrpcRequest;
+import tong.trpc.core.domain.response.TrpcResponse;
 import tong.trpc.core.io.handler.TrpcServerHandler;
 import tong.trpc.core.zipkin.TrpcServerTracingInterceptor;
 import zipkin2.reporter.brave.AsyncZipkinSpanHandler;
@@ -23,7 +23,8 @@ public class TrpcServerFilters {
     private static CopyOnWriteArrayList<TrpcServerFilter> filters = new CopyOnWriteArrayList<>();
 
     static {
-        addFilter(new TrpcInvokeMethodFilter());
+        addFilter(new TrpcDealTrpcRequestImplFilter());
+        addFilter(new TrpcDealTrpcMultipleRequestFilter());
         Properties properties = new Properties();
         try {
             properties.load(TrpcServerHandler.class.getClassLoader().getResourceAsStream("trpc.properties"));

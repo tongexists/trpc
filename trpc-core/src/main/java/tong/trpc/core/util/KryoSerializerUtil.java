@@ -3,8 +3,8 @@ package tong.trpc.core.util;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
-import tong.trpc.core.domain.TrpcRequest;
-import tong.trpc.core.domain.TrpcResponse;
+import tong.trpc.core.domain.request.TrpcRequest;
+import tong.trpc.core.domain.response.TrpcResponse;
 import tong.trpc.core.domain.TrpcTransportProtocol;
 import tong.trpc.core.domain.TrpcTransportProtocolHeader;
 
