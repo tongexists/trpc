@@ -10,10 +10,13 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
 import tong.trpc.core.util.FastjsonSerializerUtil;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 
 /**
  * @Author tong-exists
@@ -32,7 +35,14 @@ public class SpringMvcZipkinAdvice {
             "@annotation(tong.trpc.core.annotation.TrpcTrace) ||" +
             "@annotation(org.springframework.web.bind.annotation.DeleteMapping)")
     public Object aroundAdvice(ProceedingJoinPoint joinPoint) throws Throwable {
-        Object[] args = joinPoint.getArgs();
+        Object[] argsRaw = joinPoint.getArgs();
+        ArrayList<Object> argsList = new ArrayList<>(argsRaw.length);
+        for (Object o : argsRaw) {
+            if(o instanceof HttpServletRequest || o instanceof HttpServletResponse || o instanceof MultipartFile || o instanceof MultipartFile[]){
+                continue;
+            }
+            argsList.add(o);
+        }
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
         HttpServletRequest request = ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
@@ -40,7 +50,7 @@ public class SpringMvcZipkinAdvice {
         Span span = tracer.newTrace().name(request.getRequestURI()).start();
         try (Tracer.SpanInScope ws = tracer.withSpanInScope(span)) {
             ZipkinHolder.traceContextThreadLocal.set(span.context());
-            span.tag("args", FastjsonSerializerUtil.objectToJson(args));
+            span.tag("args", FastjsonSerializerUtil.objectToJson(argsList.toArray()));
             Object result = joinPoint.proceed();
             span.tag("result", FastjsonSerializerUtil.objectToJson(result));
             return result;

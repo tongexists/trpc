@@ -7,6 +7,7 @@ import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
 import tong.trpc.core.domain.*;
 import tong.trpc.core.domain.response.TrpcResponse;
+import tong.trpc.core.exception.TrpcInvocationException;
 import tong.trpc.core.io.serialize.TrpcSerialType;
 
 @Slf4j
@@ -25,7 +26,7 @@ public class TrpcClientHandler extends SimpleChannelInboundHandler<TrpcTransport
         if (response.getCode() == TrpcResponseCode.SUCCESS.getCode()) {
             decorator.getResponseFuture().complete(msg.getBody().getContent()); //返回结果
         } else {
-            decorator.getResponseFuture().completeExceptionally(new RuntimeException(response.toString()));
+            decorator.getResponseFuture().completeExceptionally(new TrpcInvocationException(response.toString(), null));
         }
     }
 

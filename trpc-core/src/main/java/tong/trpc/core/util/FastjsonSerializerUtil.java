@@ -35,4 +35,6 @@ public class FastjsonSerializerUtil {
     public static <T> String objectToJson(T obj) {
         return JSON.toJSONString(obj, JSONWriter.Feature.WriteClassName, JSONWriter.Feature.NotWriteRootClassName);
     }
+
+
 }

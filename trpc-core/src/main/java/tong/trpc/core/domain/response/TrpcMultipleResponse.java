@@ -1,6 +1,8 @@
 package tong.trpc.core.domain.response;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 /**
  * @Author tong-exists
@@ -8,6 +10,8 @@ import lombok.Data;
  * @Version 1.0
  */
 @Data
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 public class TrpcMultipleResponse extends TrpcResponseImpl{
 
     private Object[] dataArr;

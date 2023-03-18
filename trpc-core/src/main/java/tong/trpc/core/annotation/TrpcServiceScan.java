@@ -1,6 +1,7 @@
 package tong.trpc.core.annotation;
 
 import org.springframework.context.annotation.Import;
+import org.springframework.core.annotation.AliasFor;
 import tong.trpc.core.spring.TrpcSpringScannerRegister;
 
 import java.lang.annotation.*;
@@ -11,4 +12,6 @@ import java.lang.annotation.*;
 @Documented
 public @interface TrpcServiceScan {
     String[] basePackages() default {};
+    @AliasFor("basePackages")
+    String[] value() default {};
 }

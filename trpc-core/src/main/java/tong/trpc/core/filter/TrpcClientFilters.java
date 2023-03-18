@@ -18,7 +18,8 @@ public class TrpcClientFilters {
     private static CopyOnWriteArrayList<TrpcClientFilter> filters = new CopyOnWriteArrayList<>();
 
     static {
-        addFilter(new TrpcClientTracingInterceptor(ZipkinHolder.rpcTracing));
+        addLast(new TrpcClientExceptionHandlerFilter());
+        addLast(new TrpcClientTracingInterceptor(ZipkinHolder.rpcTracing));
     }
 
 
@@ -27,8 +28,11 @@ public class TrpcClientFilters {
         chain.doFilter(request, response);
     }
 
-    public static void addFilter(TrpcClientFilter filter) {
+    public static void addFirst(TrpcClientFilter filter) {
         filters.add(0, filter);
+    }
+    public static void addLast(TrpcClientFilter filter) {
+        filters.add( filter);
     }
 
 }

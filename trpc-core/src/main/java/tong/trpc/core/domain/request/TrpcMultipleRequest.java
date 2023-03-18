@@ -1,6 +1,8 @@
 package tong.trpc.core.domain.request;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import tong.trpc.core.domain.response.TrpcMultipleResponse;
 import tong.trpc.core.domain.response.TrpcResponse;
 
@@ -14,6 +16,9 @@ import java.util.stream.Stream;
  * @Version 1.0
  */
 @Data
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
+
 public class TrpcMultipleRequest extends TrpcRequestImpl {
 
     private Object[][] paramsArr;

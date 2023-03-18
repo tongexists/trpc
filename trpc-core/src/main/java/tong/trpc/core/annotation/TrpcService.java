@@ -1,5 +1,6 @@
 package tong.trpc.core.annotation;
 
+import org.springframework.core.annotation.AliasFor;
 import tong.trpc.core.io.serialize.TrpcSerialType;
 
 import java.lang.annotation.ElementType;
@@ -12,7 +13,6 @@ import java.lang.annotation.Target;
 public @interface TrpcService {
 
     String serviceInstanceName();
-
     long timeout() default 10000;
 
     String name() default "";

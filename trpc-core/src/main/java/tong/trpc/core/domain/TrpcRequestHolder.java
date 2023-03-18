@@ -18,8 +18,4 @@ public class TrpcRequestHolder {
      */
     public static final Map<Long, TrpcFutureDecorator> REQUEST_MAP = new ConcurrentHashMap<>();
 
-    /*
-    保存请求ID和trace上下文的关系
-     */
-    public static final Map<Long, TraceContext> TRACE_CONTEXT_MAP = new ConcurrentHashMap<>();
 }

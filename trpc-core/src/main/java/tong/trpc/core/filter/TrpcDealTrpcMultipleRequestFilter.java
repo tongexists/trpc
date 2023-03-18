@@ -57,11 +57,7 @@ public class TrpcDealTrpcMultipleRequestFilter implements TrpcServerFilter {
             response.setReturnType(method.getReturnType());
             chain.doFilter(request, response);
         } catch (Exception e) {
-            log.error("", e);
-            response.setCode(TrpcResponseCode.ERROR.getCode());
-            response.setRequestId(requestRaw.getRequestId());
-            response.setMsg(e.getMessage());
-            chain.doFilter(requestRaw, response);
+            throw new RuntimeException(e);
         }
 
     }

@@ -2,6 +2,9 @@ package tong.trpc.springboot;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import tong.trpc.core.TrpcStarter;
+
+import javax.annotation.PostConstruct;
 
 /**
  * @Author tong-exists
@@ -11,5 +14,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ComponentScan(basePackages = {"tong.trpc"})
 public class TrpcAutoConfiguration {
-
+    @PostConstruct
+    public void begin() {
+        TrpcStarter.run();
+    }
 }

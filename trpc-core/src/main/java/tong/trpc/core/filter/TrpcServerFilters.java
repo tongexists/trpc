@@ -23,8 +23,13 @@ public class TrpcServerFilters {
     private static CopyOnWriteArrayList<TrpcServerFilter> filters = new CopyOnWriteArrayList<>();
 
     static {
-        addFilter(new TrpcDealTrpcRequestImplFilter());
-        addFilter(new TrpcDealTrpcMultipleRequestFilter());
+        addLast(new TrpcServerExceptionHandlerFilter());
+        addServerTracingInterceptor();
+        addLast(new TrpcDealTrpcRequestImplFilter());
+        addLast(new TrpcDealTrpcMultipleRequestFilter());
+    }
+
+    private static void addServerTracingInterceptor() {
         Properties properties = new Properties();
         try {
             properties.load(TrpcServerHandler.class.getClassLoader().getResourceAsStream("trpc.properties"));
@@ -47,7 +52,7 @@ public class TrpcServerFilters {
                             .addSpanHandler(AsyncZipkinSpanHandler.create(URLConnectionSender.create("http://localhost:9411/api/v2/spans")))
                             .build()
             ));
-            addFilter(myServerTracingInterceptor);
+            addLast(myServerTracingInterceptor);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -57,8 +62,11 @@ public class TrpcServerFilters {
         chain.doFilter(request, response);
     }
 
-    public static void addFilter(TrpcServerFilter filter) {
+    public static void addFirst(TrpcServerFilter filter) {
         filters.add(0, filter);
+    }
+    public static void addLast(TrpcServerFilter filter) {
+        filters.add(filter);
     }
 
 }

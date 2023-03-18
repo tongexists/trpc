@@ -4,24 +4,37 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>tong</groupId>
+    <groupId>tong.trpc.examples</groupId>
     <artifactId>trpc-example</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <properties>
+        <common.version>1.0-SNAPSHOT</common.version>
     </properties>
+
+    <modules>
+        <module>common</module>
+        <module>consumer0</module>
+        <module>provider0</module>
+        <module>provider1</module>
+    </modules>
+
 
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>tong</groupId>
+                <groupId>tong.trpc</groupId>
                 <artifactId>trpc-parent</artifactId>
                 <version>1.0-SNAPSHOT</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
-
+            <dependency>
+                <groupId>tong.trpc.examples</groupId>
+                <artifactId>common</artifactId>
+                <version>${common.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

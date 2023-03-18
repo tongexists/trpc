@@ -50,11 +50,7 @@ public class TrpcDealTrpcRequestImplFilter implements TrpcServerFilter {
             response.setReturnType(method.getReturnType());
             chain.doFilter(request, response);
         } catch (Exception e) {
-            log.error("", e);
-            response.setCode(TrpcResponseCode.ERROR.getCode());
-            response.setRequestId(request.getRequestId());
-            response.setMsg(e.getMessage());
-            chain.doFilter(request, response);
+            throw new RuntimeException(e);
         }
 
     }

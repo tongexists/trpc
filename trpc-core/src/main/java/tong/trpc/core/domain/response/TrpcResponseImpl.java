@@ -1,12 +1,12 @@
 package tong.trpc.core.domain.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 public class TrpcResponseImpl extends AbstractTrpcResponse {
 
 

@@ -2,6 +2,7 @@ package tong.trpc.core.io;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -62,12 +63,17 @@ public class TrpcServer {
         try {
             ChannelFuture future = bootstrap.bind(this.serverAddress, this.serverPort).sync();
             log.info("Server started Success on Port" + this.serverPort);
-            future.channel().closeFuture().sync();
+            future.channel().closeFuture().addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture channelFuture) throws Exception {
+                    log.info("关闭netty server");
+                    boss.shutdownGracefully();
+                    worker.shutdownGracefully();
+                }
+            });
         } catch (InterruptedException e) {
             e.printStackTrace();
-        } finally {
-            boss.shutdownGracefully();
-            worker.shutdownGracefully();
+            throw new RuntimeException("Server startup failed");
         }
     }
 }
