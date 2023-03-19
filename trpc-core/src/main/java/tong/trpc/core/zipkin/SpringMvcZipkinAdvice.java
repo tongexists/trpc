@@ -19,6 +19,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 
 /**
+ * 切面，对RequestMapping、PostMapping、GetMapping、PutMapping、TrpcTrace、DeleteMapping标记的方法添加一个回绕通知。
+ * 开启一个新的追踪，记录方法的入参、返回结果。
  * @Author tong-exists
  * @Create 2023/3/16 17:40
  * @Version 1.0
@@ -27,7 +29,12 @@ import java.util.ArrayList;
 @Aspect
 @Slf4j
 public class SpringMvcZipkinAdvice {
-
+    /**
+     * 开启一个新的追踪，记录方法的入参、返回结果。
+     * @param joinPoint
+     * @return
+     * @throws Throwable
+     */
     @Around("@annotation(org.springframework.web.bind.annotation.RequestMapping) || " +
             "@annotation(org.springframework.web.bind.annotation.PostMapping) ||" +
             "@annotation(org.springframework.web.bind.annotation.GetMapping) ||" +

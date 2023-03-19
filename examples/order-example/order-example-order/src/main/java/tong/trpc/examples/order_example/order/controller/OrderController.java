@@ -1,20 +1,17 @@
 package tong.trpc.examples.order_example.order.controller;
 
-import com.esotericsoftware.minlog.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import tong.trpc.core.TrpcInvocation;
+import tong.trpc.core.invocation.TrpcInvocation;
 import tong.trpc.examples.order_example.common.domain.Order;
 import tong.trpc.examples.order_example.common.domain.Product;
 import tong.trpc.examples.order_example.common.service.TrpcProductService;
 import tong.trpc.examples.order_example.common.service.TrpcStorageService;
 
-import javax.annotation.PostConstruct;
-import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -35,24 +32,43 @@ public class OrderController {
     @Autowired
     private TrpcProductService productService;
 
+    /**
+     * 创建订单
+     * @param order
+     * @return
+     */
     @PostMapping("/createOrder")
     public Order createOrder(@RequestBody Order order) {
+        //减库存
         Boolean result = trpcStorageService.decreaseStock(order.getProductId(), order.getCount()).sync();
+        //获取商品信息
         Product product = productService.getProduct(order.getProductId()).sync();
         order.setOrderId(new Random(System.currentTimeMillis()).nextLong());
         order.setTotalPrice((long) (product.getPrice() * order.getCount()));
+        order.setDesc(product.getName());
         return order;
     }
 
+    /**
+     * 跟createOrder不一样的地方是，减库存decreaseStockDepth里面会调用一次productService.getProduct，
+     * @param order
+     * @return
+     */
     @PostMapping("/createOrderDepth")
     public Order createOrderDepth(@RequestBody Order order) {
         Boolean result = trpcStorageService.decreaseStockDepth(order.getProductId(), order.getCount()).sync();
         Product product = productService.getProduct(order.getProductId()).sync();
         order.setOrderId(new Random(System.currentTimeMillis()).nextLong());
         order.setTotalPrice((long) (product.getPrice() * order.getCount()));
+        order.setDesc(product.getName());
         return order;
     }
 
+    /**
+     * decreaseStockException里面会有异常产生，测试异常情况
+     * @param order
+     * @return
+     */
     @PostMapping("/createOrderException")
     public Order createOrderException(@RequestBody Order order) {
         Boolean result = trpcStorageService.decreaseStockException(order.getProductId(), order.getCount()).sync();
@@ -62,6 +78,11 @@ public class OrderController {
         return order;
     }
 
+    /**
+     * 测试TrpcInvocation.future
+     * @param order
+     * @return
+     */
     @PostMapping("/createOrderFuture")
     public Order createOrderFuture(@RequestBody Order order) {
         CompletableFuture<Boolean> future = trpcStorageService.decreaseStock(order.getProductId(), order.getCount()).future();
@@ -78,6 +99,11 @@ public class OrderController {
         return order;
     }
 
+    /**
+     * 测试TrpcInvocation.callback
+     * @param order
+     * @return
+     */
     @PostMapping("/createOrderCallback")
     public Order createOrderCallback(@RequestBody Order order) {
         trpcStorageService.decreaseStock(order.getProductId(), order.getCount()).callback(new TrpcInvocation.CallBack<Boolean>() {
@@ -97,6 +123,11 @@ public class OrderController {
         return order;
     }
 
+    /**
+     * 测试MultipleRequest
+     * @param orderIds
+     * @return
+     */
     @PostMapping("/getOrderMultiple")
     public Order[] getOrderMultiple(@RequestBody Long[] orderIds) {
         int len = orderIds.length;

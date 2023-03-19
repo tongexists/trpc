@@ -3,6 +3,9 @@ package tong.trpc.core.io.serialize;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
+/**
+ * Trpc序列化器
+ */
 public interface ITrpcSerializer {
     /*
    序列化接口

@@ -4,6 +4,7 @@ import brave.rpc.RpcClientResponse;
 import tong.trpc.core.domain.response.TrpcResponse;
 
 /**
+ * TrpcZipkinClientResponse
  * @Author tong-exists
  * @Create 2023/3/14 21:10
  * @Version 1.0

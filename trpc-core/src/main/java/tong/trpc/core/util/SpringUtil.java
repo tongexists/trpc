@@ -14,11 +14,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Spring工具类
  * @Author tong-exists
  * @Create 2023/3/5 10:48
  * @Version 1.0
  */
 public class SpringUtil {
+    /**
+     * 获取指定basePackage下所有在类上标记的某种注解
+     * @param basePackage 基包
+     * @param resourcePattern
+     * @param annotationClass 要找的注解
+     * @return 获取指定basePackage下所有在类上标记的某种注解
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
 
     public static List<Annotation> findAnnotations(String basePackage, String resourcePattern, Class<? extends Annotation> annotationClass) throws IOException, ClassNotFoundException {
         //spring工具类，可以获取指定路径下的全部类

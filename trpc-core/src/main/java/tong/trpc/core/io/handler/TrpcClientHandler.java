@@ -10,12 +10,20 @@ import tong.trpc.core.domain.response.TrpcResponse;
 import tong.trpc.core.exception.TrpcInvocationException;
 import tong.trpc.core.io.serialize.TrpcSerialType;
 
+/**
+ * 客户端io处理器
+ */
 @Slf4j
 public class TrpcClientHandler extends SimpleChannelInboundHandler<TrpcTransportProtocol<TrpcResponse>> {
 
 
-
-
+    /**
+     * 根据请求id获得异步对象，根据响应码来决定是成功还是异常完成
+     * @param ctx           the {@link ChannelHandlerContext} which this {@link SimpleChannelInboundHandler}
+     *                      belongs to
+     * @param msg           the message to handle
+     * @throws Exception
+     */
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TrpcTransportProtocol<TrpcResponse> msg) throws Exception {
         log.debug("receive Rpc Server Result");
@@ -23,19 +31,27 @@ public class TrpcClientHandler extends SimpleChannelInboundHandler<TrpcTransport
         //根据ID获得异步对象
         TrpcFutureDecorator decorator = TrpcRequestHolder.REQUEST_MAP.remove(requestId);
         TrpcResponse response = msg.getBody().getContent();
+        // 成功
         if (response.getCode() == TrpcResponseCode.SUCCESS.getCode()) {
-            decorator.getResponseFuture().complete(msg.getBody().getContent()); //返回结果
+            decorator.getResponseFuture().complete(msg.getBody().getContent());
+        // 异常
         } else {
             decorator.getResponseFuture().completeExceptionally(new TrpcInvocationException(response.toString(), null));
         }
     }
 
+    /**
+     * 间隔发起心跳
+     * @param ctx
+     * @param evt
+     * @throws Exception
+     */
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
         if (evt instanceof IdleStateEvent){
             IdleStateEvent event = (IdleStateEvent)evt;
             if (event.state()== IdleState.WRITER_IDLE){
-                log.debug(String.format("%d秒心跳异常",TrpcConstant.HEART_BEAT_INTERNAL));
+                log.debug(String.format("隔%d秒发起心跳",TrpcConstant.HEART_BEAT_INTERNAL));
                 TrpcTransportProtocolHeader header = new TrpcTransportProtocolHeader(TrpcConstant.MAGIC,
                         TrpcSerialType.TrpcKryoSerializer.getCode(), TrpcMessageType.HEARTBEAT.getCode(),
                         TrpcRequestHolder.REQUEST_ID.incrementAndGet(), 0

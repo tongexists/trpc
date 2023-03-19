@@ -3,6 +3,7 @@ package tong.trpc.core.util;
 import java.io.*;
 
 /**
+ * Jdk序列化工具
  * @Author tong-exists
  * @Create 2022/12/12 16:40
  * @Version 1.0

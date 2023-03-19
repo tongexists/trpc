@@ -14,5 +14,6 @@ public class Order {
     private Long productId;
     private Integer count;
     private Long totalPrice;
+    private String desc;
 
 }

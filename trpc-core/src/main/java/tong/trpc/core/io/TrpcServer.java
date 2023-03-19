@@ -20,6 +20,9 @@ import tong.trpc.core.io.handler.TrpcServerHandler;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * 服务端
+ */
 @Slf4j
 public class TrpcServer {
 
@@ -28,11 +31,20 @@ public class TrpcServer {
     //端口
     private int serverPort;
 
+    /**
+     *
+     * @param serverAddress 服务地址
+     * @param serverPort 端口
+     */
     public TrpcServer(String serverAddress, int serverPort) {
         this.serverAddress = serverAddress;
         this.serverPort = serverPort;
     }
 
+    /**
+     * 启动netty server
+     * 初始化ServerBootstrap， 绑定地址端口
+     */
     public void startNettyServer() {
         log.debug("begin start Netty server");
         EventLoopGroup boss = new NioEventLoopGroup();

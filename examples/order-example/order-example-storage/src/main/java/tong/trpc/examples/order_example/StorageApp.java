@@ -10,7 +10,7 @@ import tong.trpc.core.annotation.TrpcServiceScan;
  * @Version 1.0
  */
 @SpringBootApplication
-@TrpcServiceScan("tong.trpc.examples.order_example.common")
+@TrpcServiceScan(basePackages = "tong.trpc.examples.order_example.common")
 public class StorageApp {
 
     public static void main(String[] args) {

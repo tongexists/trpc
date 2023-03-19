@@ -12,6 +12,9 @@ import tong.trpc.core.io.serialize.TrpcSerializerManager;
 
 import java.util.List;
 
+/**
+ * io的解码器
+ */
 @Slf4j
 public class TrpcDecoder extends ByteToMessageDecoder {
 

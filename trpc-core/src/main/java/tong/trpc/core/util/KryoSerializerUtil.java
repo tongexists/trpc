@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 /**
+ * Kryo序列化工具
  * @Author tong-exists
  * @Create 2022/12/12 16:41
  * @Version 1.0

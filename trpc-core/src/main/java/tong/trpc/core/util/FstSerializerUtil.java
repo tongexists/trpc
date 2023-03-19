@@ -4,6 +4,7 @@ import org.nustaq.serialization.FSTConfiguration;
 
 
 /**
+ * Fst序列化工具
  * @Author tong-exists
  * @Create 2022/12/12 18:54
  * @Version 1.0

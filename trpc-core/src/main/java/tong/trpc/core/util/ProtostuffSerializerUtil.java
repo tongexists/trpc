@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 /**
+ * Protostuff序列化工具
  * @Author tong-exists
  * @Create 2022/12/12 16:46
  * @Version 1.0

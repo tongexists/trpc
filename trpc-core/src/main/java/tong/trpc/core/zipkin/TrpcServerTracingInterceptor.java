@@ -7,11 +7,12 @@ import brave.rpc.RpcServerHandler;
 import brave.rpc.RpcTracing;
 import tong.trpc.core.domain.request.TrpcRequest;
 import tong.trpc.core.domain.response.TrpcResponse;
-import tong.trpc.core.filter.TrpcServerFilter;
-import tong.trpc.core.filter.TrpcServerFilterChain;
+import tong.trpc.core.filter.server.TrpcServerFilter;
+import tong.trpc.core.filter.server.TrpcServerFilterChain;
 import tong.trpc.core.util.FastjsonSerializerUtil;
 
 /**
+ * 服务端的追踪拦截器
  * @Author tong-exists
  * @Create 2023/3/14 21:17
  * @Version 1.0
@@ -29,6 +30,12 @@ public class TrpcServerTracingInterceptor implements TrpcServerFilter {
         this.rpcTracing = rpcTracing;
     }
 
+    /**
+     * 设置当前traceContext到线程上下文，以便服务端调用的方法中又调用另一个远程服务的情况也能够串连起来，加入到整体的追踪
+     * @param request 请求
+     * @param response 响应
+     * @param chain 过滤器链
+     */
     @Override
     public void doFilter(TrpcRequest request, TrpcResponse response, TrpcServerFilterChain chain) {
         TrpcZipkinServerRequest requestWrapper = new TrpcZipkinServerRequest(request);

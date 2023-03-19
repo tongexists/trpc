@@ -12,7 +12,7 @@ import tong.trpc.core.annotation.TrpcServiceScan;
  */
 
 @SpringBootApplication
-@TrpcServiceScan("tong.trpc.examples.order_example.common")
+@TrpcServiceScan(basePackages = "tong.trpc.examples.order_example.common")
 public class ProductApp {
 
     public static void main(String[] args) {

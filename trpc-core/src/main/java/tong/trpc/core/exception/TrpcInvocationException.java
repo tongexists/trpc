@@ -1,6 +1,7 @@
 package tong.trpc.core.exception;
 
 /**
+ * 调用异常
  * @Author tong-exists
  * @Create 2023/3/18 13:01
  * @Version 1.0

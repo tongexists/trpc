@@ -24,20 +24,41 @@ import tong.trpc.core.io.handler.TrpcEncoder;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * 客户端
+ */
 @Slf4j
 public class TrpcClient {
-
+    /**
+     * netty的Bootstrap
+     */
     private final Bootstrap bootstrap;
-
+    /**
+     * netty的EventLoopGroup
+     */
     private final EventLoopGroup eventLoopGroup = new NioEventLoopGroup();
-
+    /**
+     * 远程服务端的地址
+     */
     private String serviceAddress;
-
+    /**
+     * 远程服务端的端口
+     */
     private int servicePort;
-
+    /**
+     * 通道，用于写数据
+     */
     private Channel channel;
-
+    /**
+     * 远程服务端的服务名 -》 客户端
+     */
     public static ConcurrentHashMap<String, TrpcClient> clientPool = new ConcurrentHashMap<>();
+
+    /**
+     * 构造客户端，初始化netty客户端
+     * @param serviceAddress 远程服务端的地址
+     * @param servicePort 远程服务端的端口
+     */
     public TrpcClient(String serviceAddress, int servicePort) {
         log.info("begin init Netty Client,{},{}", serviceAddress, servicePort);
         bootstrap = new Bootstrap();
@@ -65,6 +86,10 @@ public class TrpcClient {
 
     }
 
+    /**
+     * 连接
+     * @return 是否成功
+     */
     public boolean connect() {
         final ChannelFuture future;
         try {
@@ -85,7 +110,11 @@ public class TrpcClient {
         }
     }
 
-    // 发送数据包
+    /**
+     * 发送数据
+     * @param protocol 协议
+     * @throws ServerCloseConnectionException 当服务端认为客户端心跳异常时会断开连接，此时发送数据会抛出ServerCloseConnectionException
+     */
     public void sendRequest(TrpcTransportProtocol protocol) throws ServerCloseConnectionException {
         log.debug("begin transfer data");
         if (!this.channel.isActive()) {
@@ -94,17 +123,30 @@ public class TrpcClient {
         this.channel.writeAndFlush(protocol);
     }
 
+    /**
+     * 与服务端的连接是否活跃
+     * @return 与服务端的连接是否活跃
+     */
     public boolean isActive() {
         return this.channel.isActive();
     }
 
+    /**
+     * 服务发现服务名下的一个服务实例，连接上服务端，并发送数据
+     * @param protocol 协议
+     * @param serviceInstanceName 服务名
+     */
     public static void sendRequest(TrpcTransportProtocol protocol, String serviceInstanceName) {
         TrpcDiscovery discovery = TrpcDiscovery.getDiscovery();
+        // 负载均衡选到一个服务实例
         String addressPort = discovery.getInstance(serviceInstanceName);
         String[] split = addressPort.split(":");
+        // 从池中找一下，看是否已经连接过
         TrpcClient client = TrpcClient.clientPool.get(addressPort);
+        //未连接
         if (client == null) {
             client = new TrpcClient(split[0], Integer.parseInt(split[1]));
+            //连接
             if (client.connect()) {
                 log.info("连接远程服务成功");
             } else {
@@ -112,7 +154,9 @@ public class TrpcClient {
                 throw new RuntimeException("连接远程服务失败");
             }
             TrpcClient.clientPool.put(addressPort, client);
+        // 已连接
         } else {
+            //连接已被关闭，重新连接
             if (!client.isActive()) {
                 if (client.connect()) {
                     log.info("连接远程服务成功");
@@ -122,7 +166,7 @@ public class TrpcClient {
                 }
             }
         }
-
+        //发送数据
         try {
             client.sendRequest(protocol);
         } catch (ServerCloseConnectionException e) {

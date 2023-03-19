@@ -7,6 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 
 /**
+ * Fastjson序列化实现
  * @Author tong-exists
  * @Create 2022/12/13 20:45
  * @Version 1.0

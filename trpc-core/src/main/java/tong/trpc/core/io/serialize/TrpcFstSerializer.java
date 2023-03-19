@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 /**
+ * Fst序列化实现
  * @Author tong-exists
  * @Create 2022/12/12 20:06
  * @Version 1.0

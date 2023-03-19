@@ -4,6 +4,7 @@ import brave.rpc.RpcServerRequest;
 import tong.trpc.core.domain.request.TrpcRequest;
 
 /**
+ * TrpcZipkinServerRequest
  * @Author tong-exists
  * @Create 2023/3/14 21:10
  * @Version 1.0

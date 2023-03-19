@@ -24,8 +24,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * In a real application, the Service payload will most likely
- * be more detailed than this. But, this gives a good example.
+ * 服务实例的详细描述，暂时没有作用
  */
 @JsonRootName("details")
 @Data

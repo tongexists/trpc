@@ -4,6 +4,9 @@ import lombok.*;
 import tong.trpc.core.domain.response.TrpcResponse;
 import tong.trpc.core.domain.response.TrpcResponseImpl;
 
+/**
+ * 普通请求
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,7 +22,7 @@ public class TrpcRequestImpl extends AbstractTrpcRequest {
 
     private Class<?>[] paramsTypes; // 参数类型
 
-    private Class<?> returnType;
+    private Class<?> returnType;//返回类型
 
 
     @Override

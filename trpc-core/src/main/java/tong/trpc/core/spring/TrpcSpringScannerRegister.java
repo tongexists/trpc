@@ -14,7 +14,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
-import tong.trpc.core.TrpcServiceProxyInvocationHandler;
+import tong.trpc.core.invocation.TrpcServiceProxyInvocationHandler;
 import tong.trpc.core.annotation.TrpcService;
 import tong.trpc.core.annotation.TrpcServiceScan;
 
@@ -24,6 +24,10 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+/**
+ * 获取TrpcServiceScan注解的basePackages，扫描此basePackages下的被TrpcService注解的接口，代理产生实现类实例，并放入spring容器。
+ */
 @Slf4j
 public class TrpcSpringScannerRegister implements ImportBeanDefinitionRegistrar, ResourceLoaderAware, EnvironmentAware {
 

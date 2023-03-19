@@ -5,6 +5,7 @@ import java.util.Random;
 import java.util.function.Supplier;
 
 /**
+ * 随机负载均衡策略
  * @Author tong-exists
  * @Create 2023/3/5 10:16
  * @Version 1.0
@@ -19,10 +20,14 @@ public class RandomPolicy implements BalancePolicy {
     });
 
     @Override
-    public int choose(List list) {
+    public int choose(String serviceName, List list) {
         return threadLocalRandom.get().nextInt(list.size());
     }
 
-    public static RandomPolicy randomPolicy = new RandomPolicy();
+    @Override
+    public String name() {
+        return "RandomPolicy";
+    }
+
 
 }

@@ -6,6 +6,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * 存放请求id、请求和响应的对应关系
+ */
 public class TrpcRequestHolder {
 
     /*

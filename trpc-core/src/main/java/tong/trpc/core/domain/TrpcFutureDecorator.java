@@ -7,17 +7,16 @@ import tong.trpc.core.domain.response.TrpcResponse;
 
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * 单纯用于包装CompletableFuture<TrpcResponse>
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class TrpcFutureDecorator {
-
+    /**
+     * 响应的CompletableFuture
+     */
     private CompletableFuture<TrpcResponse> responseFuture;
-
-//    private CompletableFuture resultFuture;
-
-//    private Class<?> resultClazz;
-
-
 
 }

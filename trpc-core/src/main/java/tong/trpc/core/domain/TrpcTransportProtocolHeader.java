@@ -6,6 +6,9 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
+/**
+ * 协议头
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

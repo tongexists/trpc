@@ -2,6 +2,9 @@ package tong.trpc.core.spring;
 
 import org.springframework.beans.factory.FactoryBean;
 
+/**
+ * FactoryBean
+ */
 public class TrpcSpringFactoryBean implements FactoryBean<Object> {
 
     //返回的对象实例

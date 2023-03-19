@@ -1,6 +1,6 @@
 package tong.trpc.examples.order_example.common.service;
 
-import tong.trpc.core.TrpcInvocation;
+import tong.trpc.core.invocation.TrpcInvocation;
 import tong.trpc.core.annotation.TrpcService;
 
 /**

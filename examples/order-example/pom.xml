@@ -46,5 +46,10 @@
             <groupId>tong.trpc</groupId>
             <artifactId>trpc-spring-boot-starter</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>

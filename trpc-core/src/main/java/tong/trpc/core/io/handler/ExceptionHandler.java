@@ -6,6 +6,7 @@ import io.netty.channel.ChannelPromise;
 import lombok.extern.slf4j.Slf4j;
 
 /**
+ * netty的异常处理器
  * @Author tong-exists
  * @Create 2022/12/12 16:24
  * @Version 1.0

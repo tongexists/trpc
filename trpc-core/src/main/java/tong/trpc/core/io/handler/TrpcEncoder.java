@@ -9,6 +9,9 @@ import tong.trpc.core.domain.TrpcTransportProtocolHeader;
 import tong.trpc.core.io.serialize.ITrpcSerializer;
 import tong.trpc.core.io.serialize.TrpcSerializerManager;
 
+/**
+ * io编码器
+ */
 @Slf4j
 public class TrpcEncoder extends MessageToByteEncoder<TrpcTransportProtocol> {
     @Override

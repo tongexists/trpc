@@ -4,6 +4,9 @@ import tong.trpc.core.util.JdkSerializerUtil;
 
 import java.io.*;
 
+/**
+ * Jdk序列化实现
+ */
 public class TrpcJdkSerializer implements ITrpcSerializer {
 
     @Override

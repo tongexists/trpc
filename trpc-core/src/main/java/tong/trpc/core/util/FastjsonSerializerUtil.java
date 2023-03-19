@@ -6,6 +6,7 @@ import com.alibaba.fastjson2.JSONReader;
 import com.alibaba.fastjson2.JSONWriter;
 
 /**
+ * Fastjson序列化工具
  * @Author tong-exists
  * @Create 2022/12/12 20:31
  * @Version 1.0

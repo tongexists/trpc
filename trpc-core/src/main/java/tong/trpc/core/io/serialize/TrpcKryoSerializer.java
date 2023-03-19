@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 /**
+ * Kryo序列化实现
  * @Author tong-exists
  * @Create 2022/12/12 11:13
  * @Version 1.0
