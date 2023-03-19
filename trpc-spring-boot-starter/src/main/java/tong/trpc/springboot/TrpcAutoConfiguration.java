@@ -13,7 +13,7 @@ import javax.annotation.PostConstruct;
  * @Version 1.0
  */
 @Configuration
-@ComponentScan(basePackages = {"tong.trpc"})
+@ComponentScan(basePackages = {"tong.trpc.core"})
 public class TrpcAutoConfiguration {
     /**
      * 启动netty server，注册到zookeeper服务发现

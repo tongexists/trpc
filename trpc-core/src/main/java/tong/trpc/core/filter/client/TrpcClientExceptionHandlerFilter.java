@@ -29,4 +29,14 @@ public class TrpcClientExceptionHandlerFilter implements TrpcClientFilter {
             future.completeExceptionally(e);
         }
     }
+
+    @Override
+    public boolean isEnable() {
+        return true;
+    }
+
+    @Override
+    public String order() {
+        return TrpcClientFiltersOrder.TrpcClientExceptionHandlerFilter.getOrder();
+    }
 }

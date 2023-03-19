@@ -3,6 +3,8 @@ package tong.trpc.core;
 import lombok.extern.slf4j.Slf4j;
 import tong.trpc.core.discovery.TrpcDiscovery;
 import tong.trpc.core.io.TrpcServer;
+import tong.trpc.core.zipkin.ZipkinHolder;
+import tong.trpc.core.zipkin.ZipkinStarter;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -17,29 +19,14 @@ import java.util.Properties;
 public class TrpcStarter {
 
     /**
-     * 读取trpc.properties的配置，启动netty server，注册服务到zookeeper
+     * 读取trpc.properties的配置，判断是否启动追踪，启动netty server，注册服务到zookeeper
      */
     public static void run() {
-        Properties properties = new Properties();
-        try {
-            properties.load(TrpcStarter.class.getClassLoader().getResourceAsStream("trpc.properties"));
-            String connectZkStr = (String) properties.getOrDefault("connectZkStr", "127.0.0.1:2181");
-            String trpcServicesBasePackage = (String) properties.getOrDefault("trpcServicesBasePackage", "common.api.service");
-            String serviceName = (String) properties.get("serviceName");
-            if (serviceName == null) {
-                throw new RuntimeException("未在trpc.properties配置serviceName");
-            }
-
-            String serverAddress = (String) properties.getOrDefault("serverAddress", "127.0.0.1");
-            String serverPortStr = (String) properties.get("serverPort");
-            if (serverPortStr == null) {
-                throw new RuntimeException("未在trpc.properties配置serverPort");
-            }
-            int serverPort = Integer.parseInt(serverPortStr);
-            run(connectZkStr, trpcServicesBasePackage, serviceName, serverAddress, serverPort);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        TrpcConfig.loadFromTrpcProperties();
+        if (TrpcConfig.traceEnable) {
+            ZipkinStarter.start(TrpcConfig.serviceName, TrpcConfig.serverAddress, TrpcConfig.serverPort, TrpcConfig.zipkinUrl);
         }
+        run(TrpcConfig.connectZkStr, TrpcConfig.trpcServicesBasePackage, TrpcConfig.serviceName, TrpcConfig.serverAddress, TrpcConfig.serverPort);
     }
 
     /**

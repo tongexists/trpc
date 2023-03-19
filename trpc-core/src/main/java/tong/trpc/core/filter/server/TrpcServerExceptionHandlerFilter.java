@@ -30,4 +30,14 @@ public class TrpcServerExceptionHandlerFilter implements TrpcServerFilter {
             response.setMsg(e.getMessage());
         }
     }
+
+    @Override
+    public boolean isEnable() {
+        return true;
+    }
+
+    @Override
+    public String order() {
+        return TrpcServerFiltersOrder.TrpcServerExceptionHandlerFilter.getOrder();
+    }
 }

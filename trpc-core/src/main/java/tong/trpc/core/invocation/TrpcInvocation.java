@@ -12,10 +12,12 @@ import tong.trpc.core.domain.response.TrpcResponse;
 import tong.trpc.core.filter.client.TrpcClientFilters;
 import tong.trpc.core.io.TrpcClient;
 import tong.trpc.core.io.serialize.TrpcSerialType;
+import tong.trpc.core.util.TrpcInvocationUtils;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 /**
  * 调用实例
@@ -88,6 +90,10 @@ public class TrpcInvocation<T> {
      * 请求类型
      */
     private int requestType;
+    /**
+     * 配置TrpcRequest
+     */
+    private Consumer<TrpcRequest> configRequestConsumer = (a) -> {};
 
     /**
      * 发起请求，装配TrpcRequest、协议，经客户端过滤器处理后，发起请求
@@ -101,6 +107,8 @@ public class TrpcInvocation<T> {
         this.request.setParamsTypes(this.paramsTypes);
         this.request.setRequestId(requestId);
         this.request.setParams(this.params);
+        this.request.setServiceInstanceName(this.serviceInstanceName);
+        this.configRequestConsumer.accept(this.request);
         TrpcTransportProtocolHeader header = new TrpcTransportProtocolHeader(
                 TrpcConstant.MAGIC, this.serialType.getCode(), TrpcMessageType.REQUEST.getCode(),
                 requestId, 0);
@@ -109,15 +117,18 @@ public class TrpcInvocation<T> {
         this.requestProtocol.setHeader(header);
         this.requestProtocol.setBody(body);
 
-        this.responseFuture = new CompletableFuture<>();
-        //请求对应的responseFuture
-        TrpcRequestHolder.REQUEST_MAP.put(requestId, new TrpcFutureDecorator(this.responseFuture));
         //已处理
         this.isInvoked = true;
-        //过滤器处理
-        TrpcClientFilters.doFilter(this.request, this.responseFuture);
-        // 发起请求
-        TrpcClient.sendRequest(this.requestProtocol, this.serviceInstanceName);
+        this.responseFuture = TrpcInvocationUtils.invokeByProtocol(this.requestProtocol);
+
+    }
+
+    /**
+     * 配置TrpcRequest
+     * @param consumer
+     */
+    public void configRequest(Consumer<TrpcRequest> consumer) {
+        this.configRequestConsumer = consumer;
     }
 
     /**

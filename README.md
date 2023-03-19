@@ -1,36 +1,150 @@
-# trpc-test
+# trpc
 
-#### 介绍
+# 介绍
+Trpc是一个分布式rpc框架。
 
-#### 软件架构
-软件架构说明
+特点：
+- 基于netty的网络io，高效通信
+- 基于curator的服务发现
+- 负载均衡
+- 多种序列化方式，可更换序列化
+- 融合spring，具有spring boot starter，方便快速开发
+- 基于zipkin的分布式追踪，可视化观察链路
+- 异常处理
+- netty的心跳机制
 
+独特点：
+- 借鉴了retrofit的调用方式，支持同步、future、回调
+- 抽象的请求和响应，能够自定义各种请求、响应进行通信，便于扩展各种应用场景。例如批次调用同一方法
+- 请求和响应使用过滤器模式进行处理，用户可添加自定义过滤器
 
-#### 安装教程
+# 软件架构
+![](doc/trpc架构.png)
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+# 快速开始
+## 安装
+### spring boot
+如果你的项目使用spring boot，这是你的最佳选择
+1. 下载trpc-spring-boot-starter-xx.jar
+2. 将该jar加入到类路径
 
-#### 使用说明
+### spring
+如果你的项目使用spring
+1. 下载trpc-core-xx.jar
+2. 将该jar加入到类路径
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+## 使用
+### 前提
+1. zookeeper已启动, zookeeper 3.7
 
-#### 参与贡献
+### spring boot
+1.扫描TrpcService接口
 
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
+@TrpcServiceScan的basePackages中指定TrpcService接口所在的包
 
+```java
+@SpringBootApplication
+@TrpcServiceScan(basePackages = "tong.trpc.examples.order_example.common")
+public class OrderApp {
 
-#### 特技
+    public static void main(String[] args) {
+        SpringApplication.run(OrderApp.class, args);
+    }
 
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+}
+```
+
+2.在resources下增加trpc.properties，配置如下
+```properties
+connectZkStr=127.0.0.1:2181
+trpcServicesBasePackage=tong.trpc.examples.order_example.common
+serviceName=order
+serverAddress=127.0.0.1
+serverPort=8005
+balancePolicyClassName=tong.trpc.core.discovery.RoundRobinPolicy
+#connectZkStr zookeeper的连接地址
+#trpcServicesBasePackage trpc服务的基包，用于初始化服务缓存，提前从服务中心拉去服务缓存起来
+#serviceName trpc服务端的服务名
+#serverAddress trpc服务端的地址
+#serverPort trpc服务端的端口
+# balancePolicyClassName 负载均衡算法的实现类，不填则是默认实现
+```
+3.添加TrpcService
+
+- TrpcService接口名需要以Trpc开头，但是对应的业务接口不已Trpc开头。
+- TrpcService接口的方法的返回值需要用TrpcInvocation包裹。
+- TrpcService接口和业务接口需要在相同的包下，通过有无Trpc前缀区分
+```java
+@TrpcService(serviceInstanceName = "product")
+public interface TrpcProductService {
+
+    TrpcInvocation<Product> getProduct(Long productId);
+    
+}
+```
+对应的业务接口不已Trpc开头
+```java
+public interface ProductService {
+
+    Product getProduct(Long productId);
+
+}
+
+@Service
+@Slf4j
+public class ProductServiceImpl implements ProductService {
+    @Override
+    public Product getProduct(Long productId) {
+        Product product = new Product();
+        product.setProductId(productId);
+        product.setName(String.format("Name[%s]", product.getProductId()));
+        product.setDesc(String.format("Desc[%s]", product.getProductId()));
+        product.setPrice(10);
+        log.info("查询到{}", product.toString());
+        return product;
+    }
+}
+```
+4.使用
+
+```java
+@Autowired
+private TrpcProductService productService;
+
+@PostMapping("/createOrder")
+public Order createOrder(@RequestBody Order order) {
+        ...
+        Product product = productService.getProduct(order.getProductId()).sync();
+        ...
+}
+```
+
+### spring
+跟spring boot的步骤基本一致。
+
+不同点
+- 1.需要手动启动TrpcServer
+- 2.需要手动将tong.trpc.core包纳入spring管理
+```java
+@SpringBootApplication(scanBasePackages = {"tong.trpc.core", "tong.trpc.examples.order_example"})
+@TrpcServiceScan(basePackages = "tong.trpc.examples.order_example.common")
+public class OrderApp {
+
+    public static void main(String[] args) {
+        SpringApplication.run(OrderApp.class, args);
+        TrpcStarter.run();
+    }
+
+}
+```
+
+### 分布式追踪
+#### 前提
+1.zipkin启动，zipkin-server-2.24.0
+
+#### 开启步骤
+trpc.properties增加以下
+```properties
+traceEnable=true
+zipkinUrl=http://localhost:9411/api/v2/spans
+```

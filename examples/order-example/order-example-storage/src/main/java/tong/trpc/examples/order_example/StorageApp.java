@@ -2,6 +2,7 @@ package tong.trpc.examples.order_example;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import tong.trpc.core.TrpcStarter;
 import tong.trpc.core.annotation.TrpcServiceScan;
 
 /**

@@ -70,5 +70,15 @@ public class TrpcDealTrpcMultipleRequestFilter implements TrpcServerFilter {
 
     }
 
+    @Override
+    public boolean isEnable() {
+        return true;
+    }
+
+    @Override
+    public String order() {
+        return TrpcServerFiltersOrder.TrpcDealTrpcMultipleRequestFilter.getOrder();
+    }
+
 
 }

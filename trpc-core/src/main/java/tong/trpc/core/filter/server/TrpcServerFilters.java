@@ -2,14 +2,17 @@ package tong.trpc.core.filter.server;
 
 import brave.Tracing;
 import brave.rpc.RpcTracing;
+import tong.trpc.core.TrpcConfig;
 import tong.trpc.core.domain.request.TrpcRequest;
 import tong.trpc.core.domain.response.TrpcResponse;
+import tong.trpc.core.filter.client.TrpcClientFilter;
 import tong.trpc.core.io.handler.TrpcServerHandler;
 import tong.trpc.core.zipkin.TrpcServerTracingInterceptor;
 import zipkin2.reporter.brave.AsyncZipkinSpanHandler;
 import zipkin2.reporter.urlconnection.URLConnectionSender;
 
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -20,53 +23,19 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @Version 1.0
  */
 public class TrpcServerFilters {
+
+
     /**
      * 保存过滤器
      */
     private static CopyOnWriteArrayList<TrpcServerFilter> filters = new CopyOnWriteArrayList<>();
 
     static {
-          /*
-            添加默认过滤器，[TrpcServerExceptionHandlerFilter, TrpcServerTracingInterceptor
-            ，TrpcDealTrpcRequestImplFilter， TrpcDealTrpcMultipleRequestFilter]
-         */
-        addLast(new TrpcServerExceptionHandlerFilter());
-        addServerTracingInterceptor();
-        addLast(new TrpcDealTrpcRequestImplFilter());
-        addLast(new TrpcDealTrpcMultipleRequestFilter());
+        add(new TrpcServerExceptionHandlerFilter());
+        add(new TrpcDealTrpcRequestImplFilter());
+        add(new TrpcDealTrpcMultipleRequestFilter());
     }
 
-    /**
-     * 添加TrpcServerTracingInterceptor，需要从trpc.properties读取配置
-     */
-    private static void addServerTracingInterceptor() {
-        Properties properties = new Properties();
-        try {
-            properties.load(TrpcServerHandler.class.getClassLoader().getResourceAsStream("trpc.properties"));
-            String serviceName = (String) properties.get("serviceName");
-            if (serviceName == null) {
-                throw new RuntimeException("未在trpc.properties配置serviceName");
-            }
-            String serverAddress = (String) properties.getOrDefault("serverAddress", "127.0.0.1");
-            String serverPortStr = (String) properties.get("serverPort");
-            if (serverPortStr == null) {
-                throw new RuntimeException("未在trpc.properties配置serverPort");
-            }
-            int serverPort = Integer.parseInt(serverPortStr);
-
-            TrpcServerTracingInterceptor myServerTracingInterceptor = new TrpcServerTracingInterceptor(RpcTracing.create(
-                    Tracing.newBuilder()
-                            .localServiceName(serviceName)
-                            .localPort(serverPort)
-                            .localIp(serverAddress)
-                            .addSpanHandler(AsyncZipkinSpanHandler.create(URLConnectionSender.create("http://localhost:9411/api/v2/spans")))
-                            .build()
-            ));
-            addLast(myServerTracingInterceptor);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
     /**
      * 执行过滤
      * @param request 请求
@@ -91,4 +60,17 @@ public class TrpcServerFilters {
         filters.add(filter);
     }
 
+    /**
+     * 添加过滤器，按照过滤器的order进行排序
+     * @param filter 过滤器
+     */
+    public static void add(TrpcServerFilter filter) {
+        filters.add(filter);
+        filters.sort(new Comparator<TrpcServerFilter>() {
+            @Override
+            public int compare(TrpcServerFilter o1, TrpcServerFilter o2) {
+                return o1.order().compareTo(o2.order());
+            }
+        });
+    }
 }

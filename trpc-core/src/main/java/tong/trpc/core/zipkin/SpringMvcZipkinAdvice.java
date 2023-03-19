@@ -7,6 +7,8 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.boot.autoconfigure.condition.*;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -28,6 +30,7 @@ import java.util.ArrayList;
 @Component
 @Aspect
 @Slf4j
+@Conditional(SpringMvcZipkinAdviceCondition.class)
 public class SpringMvcZipkinAdvice {
     /**
      * 开启一个新的追踪，记录方法的入参、返回结果。

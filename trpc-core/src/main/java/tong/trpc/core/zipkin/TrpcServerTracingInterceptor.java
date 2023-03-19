@@ -2,14 +2,19 @@ package tong.trpc.core.zipkin;
 
 import brave.Span;
 import brave.Tracer;
+import brave.Tracing;
 import brave.propagation.CurrentTraceContext;
 import brave.rpc.RpcServerHandler;
 import brave.rpc.RpcTracing;
+import tong.trpc.core.TrpcConfig;
 import tong.trpc.core.domain.request.TrpcRequest;
 import tong.trpc.core.domain.response.TrpcResponse;
 import tong.trpc.core.filter.server.TrpcServerFilter;
 import tong.trpc.core.filter.server.TrpcServerFilterChain;
+import tong.trpc.core.filter.server.TrpcServerFiltersOrder;
 import tong.trpc.core.util.FastjsonSerializerUtil;
+import zipkin2.reporter.brave.AsyncZipkinSpanHandler;
+import zipkin2.reporter.urlconnection.URLConnectionSender;
 
 /**
  * 服务端的追踪拦截器
@@ -23,6 +28,7 @@ public class TrpcServerTracingInterceptor implements TrpcServerFilter {
     private final Tracer tracer;
     private final RpcServerHandler handler;
     private final RpcTracing rpcTracing;
+
 
     public TrpcServerTracingInterceptor(RpcTracing rpcTracing) {
         tracer = rpcTracing.tracing().tracer();
@@ -56,5 +62,15 @@ public class TrpcServerTracingInterceptor implements TrpcServerFilter {
             handler.handleSend(responseWrapper, span); // 5.
             ZipkinHolder.traceContextThreadLocal.remove();
         }
+    }
+
+    @Override
+    public boolean isEnable() {
+        return TrpcConfig.traceEnable;
+    }
+
+    @Override
+    public String order() {
+        return TrpcServerFiltersOrder.TrpcServerTracingInterceptor.getOrder();
     }
 }

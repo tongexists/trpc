@@ -7,10 +7,12 @@ import brave.propagation.TraceContext;
 import brave.rpc.RpcClientHandler;
 import brave.rpc.RpcTracing;
 import lombok.extern.slf4j.Slf4j;
+import tong.trpc.core.TrpcConfig;
 import tong.trpc.core.domain.request.TrpcRequest;
 import tong.trpc.core.domain.response.TrpcResponse;
 import tong.trpc.core.filter.client.TrpcClientFilter;
 import tong.trpc.core.filter.client.TrpcClientFilterChain;
+import tong.trpc.core.filter.client.TrpcClientFiltersOrder;
 import tong.trpc.core.util.FastjsonSerializerUtil;
 
 import java.util.concurrent.CompletableFuture;
@@ -78,5 +80,15 @@ public class TrpcClientTracingInterceptor implements TrpcClientFilter {
             });
         }
 
+    }
+
+    @Override
+    public boolean isEnable() {
+        return TrpcConfig.traceEnable;
+    }
+
+    @Override
+    public String order() {
+        return TrpcClientFiltersOrder.TrpcClientTracingInterceptor.getOrder();
     }
 }

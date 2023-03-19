@@ -10,6 +10,7 @@ import org.apache.curator.x.discovery.*;
 import org.apache.curator.x.discovery.details.JsonInstanceSerializer;
 import org.apache.curator.x.discovery.details.ServiceCacheListener;
 import org.apache.curator.x.discovery.strategies.RoundRobinStrategy;
+import tong.trpc.core.TrpcConfig;
 import tong.trpc.core.TrpcStarter;
 import tong.trpc.core.annotation.TrpcService;
 import tong.trpc.core.util.SpringUtil;
@@ -257,17 +258,9 @@ public class TrpcDiscovery {
      * 初始化负载均衡算法
      */
     private void initBalancePolicy() {
-        Properties properties = new Properties();
         try {
-            properties.load(TrpcStarter.class.getClassLoader().getResourceAsStream("trpc.properties"));
-            String balancePolicy = (String) properties.get("balancePolicyClassName");
-            if (balancePolicy == null) {
-                balancePolicy = "tong.trpc.core.discovery.RandomPolicy";
-            }
-            Class<?> clazz = Class.forName(balancePolicy);
+            Class<?> clazz = Class.forName(TrpcConfig.balancePolicyClassName);
             this.balancePolicy = (BalancePolicy) clazz.newInstance();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         } catch (InstantiationException e) {
