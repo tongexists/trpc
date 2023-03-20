@@ -20,6 +20,9 @@ Trpc是一个分布式rpc框架。
 ![](doc/trpc架构.png)
 
 # 快速开始
+## 样例
+examples目录下
+
 ## 安装
 ### spring boot
 如果你的项目使用spring boot，这是你的最佳选择
@@ -146,3 +149,6 @@ trpc.properties增加以下
 traceEnable=true
 zipkinUrl=http://localhost:9411/api/v2/spans
 ```
+
+# 自定义请求处理
+请阅读[自定义请求处理](./doc/custom-request.md)

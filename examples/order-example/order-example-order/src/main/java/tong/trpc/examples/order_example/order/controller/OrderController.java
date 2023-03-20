@@ -15,6 +15,8 @@ import tong.trpc.examples.order_example.common.service.TrpcStorageService;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * @Author tong-exists
@@ -31,6 +33,11 @@ public class OrderController {
 
     @Autowired
     private TrpcProductService productService;
+
+    @PostMapping("/testSerializer")
+    public void testSerializer(@RequestBody Order order) {
+        Product sync = productService.getProduct(order).sync();
+    }
 
     /**
      * 创建订单

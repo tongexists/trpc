@@ -24,9 +24,10 @@ public class TrpcClientFilters {
 
     static {
         /*
-            添加默认过滤器，[TrpcClientExceptionHandlerFilter]
+            添加默认过滤器
          */
         add(new TrpcClientExceptionHandlerFilter());
+        add(new TrpcSendRequestFilter());
     }
 
     /**

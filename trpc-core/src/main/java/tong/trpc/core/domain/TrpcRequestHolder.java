@@ -21,4 +21,8 @@ public class TrpcRequestHolder {
      */
     public static final Map<Long, TrpcFutureDecorator> REQUEST_MAP = new ConcurrentHashMap<>();
 
+    /**
+     * 请求id映射到TrpcTransportProtocol
+     */
+    public static final ConcurrentHashMap<Long, TrpcTransportProtocol> PROTOCOL_MAP = new ConcurrentHashMap<>();
 }

@@ -2,6 +2,7 @@ package tong.trpc.examples.order_example.common.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import tong.trpc.examples.order_example.common.domain.Order;
 import tong.trpc.examples.order_example.common.domain.Product;
 import tong.trpc.examples.order_example.common.service.ProductService;
 
@@ -21,6 +22,16 @@ public class ProductServiceImpl implements ProductService {
         product.setDesc(String.format("Desc[%s]", product.getProductId()));
         product.setPrice(10);
         log.info("查询到{}", product.toString());
+        return product;
+    }
+
+    @Override
+    public Product getProduct(Order order) {
+        Product product = new Product();
+        product.setProductId(order.getProductId());
+        product.setName(String.format("Name[%s]", product.getProductId()));
+        product.setDesc(order.getDesc());
+        product.setPrice(10);
         return product;
     }
 }

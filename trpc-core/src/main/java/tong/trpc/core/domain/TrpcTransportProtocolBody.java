@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 /**
  * 协议体
  * @param <T> 协议体内容类型
@@ -11,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TrpcTransportProtocolBody<T> {
+public class TrpcTransportProtocolBody<T> implements Serializable {
     /**
      * 内容
      */

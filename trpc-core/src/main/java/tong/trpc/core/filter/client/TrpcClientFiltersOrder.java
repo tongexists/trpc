@@ -14,7 +14,8 @@ public enum TrpcClientFiltersOrder {
      * TrpcClientExceptionHandlerFilter
      */
     TrpcClientExceptionHandlerFilter("0", "TrpcClientExceptionHandlerFilter"),
-    TrpcClientTracingInterceptor("1", "TrpcClientTracingInterceptor");
+    TrpcClientTracingInterceptor("1", "TrpcClientTracingInterceptor"),
+    TrpcSendRequestFilter("2", "TrpcSendRequestFilter");
 
     /**
      * 顺序，决定了在过滤器链中的位置，按字典升序，请使用数字

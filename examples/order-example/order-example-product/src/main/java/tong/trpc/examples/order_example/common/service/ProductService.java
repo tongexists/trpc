@@ -1,5 +1,6 @@
 package tong.trpc.examples.order_example.common.service;
 
+import tong.trpc.examples.order_example.common.domain.Order;
 import tong.trpc.examples.order_example.common.domain.Product;
 
 /**
@@ -10,5 +11,7 @@ import tong.trpc.examples.order_example.common.domain.Product;
 public interface ProductService {
 
     Product getProduct(Long productId);
+
+    Product getProduct(Order order);
 
 }

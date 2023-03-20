@@ -9,6 +9,7 @@ import tong.trpc.core.io.TrpcClient;
 import tong.trpc.core.io.serialize.TrpcSerialType;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BiConsumer;
 
 /**
  * 调用工具类
@@ -37,23 +38,22 @@ public class TrpcInvocationUtils {
      * @return  CompletableFuture<TrpcResponse>
      */
     public static CompletableFuture<TrpcResponse> invoke(TrpcRequest request){
-        long requestId = TrpcRequestHolder.REQUEST_ID.incrementAndGet();
         TrpcTransportProtocolHeader header = new TrpcTransportProtocolHeader(
                 TrpcConstant.MAGIC, TrpcSerialType.TrpcKryoSerializer.getCode(), TrpcMessageType.REQUEST.getCode(),
-                requestId, 0);
+                request.getRequestId(), 0);
         TrpcTransportProtocolBody<TrpcRequest> body = new TrpcTransportProtocolBody<>(request);
         TrpcTransportProtocol<TrpcRequest> requestProtocol = new TrpcTransportProtocol<>();
         requestProtocol.setHeader(header);
         requestProtocol.setBody(body);
+        return invokeByProtocol(requestProtocol);
+    }
 
-        CompletableFuture<TrpcResponse> responseFuture = new CompletableFuture<>();
-        //请求对应的responseFuture
-        TrpcRequestHolder.REQUEST_MAP.put(requestId, new TrpcFutureDecorator(responseFuture));
-        //已处理
-        TrpcClientFilters.doFilter(request, responseFuture);
-        // 发起请求
-        TrpcClient.sendRequest(requestProtocol, request.getServiceInstanceName());
-        return responseFuture;
+    /**
+     * 获取请求id
+     * @return
+     */
+    public static long newRequestId() {
+        return TrpcRequestHolder.REQUEST_ID.incrementAndGet();
     }
 
     /**
@@ -63,12 +63,39 @@ public class TrpcInvocationUtils {
      */
     public static CompletableFuture<TrpcResponse> invokeByProtocol(TrpcTransportProtocol<TrpcRequest> protocol) {
         CompletableFuture<TrpcResponse> responseFuture = new CompletableFuture<>();
+        long requestId = 0;
+        if (protocol.getHeader().getRequestId() == 0L){
+            if (protocol.getBody().getContent().getRequestId() == 0L) {
+                throw new RuntimeException("未设置requestId");
+            } else {
+                requestId = protocol.getBody().getContent().getRequestId();
+                protocol.getHeader().setRequestId(requestId);
+            }
+        } else {
+            if (protocol.getBody().getContent().getRequestId() == 0L) {
+                requestId = protocol.getHeader().getRequestId();
+                protocol.getBody().getContent().setRequestId(requestId);
+            } else {
+                if (protocol.getHeader().getRequestId() != protocol.getBody().getContent().getRequestId()) {
+                    throw new RuntimeException("协议头部中的requestId和请求中的requestId不一致");
+                } else {
+                    requestId = protocol.getHeader().getRequestId();
+                }
+            }
+        }
         //请求对应的responseFuture
-        TrpcRequestHolder.REQUEST_MAP.put(protocol.getHeader().getRequestId(), new TrpcFutureDecorator(responseFuture));
+        TrpcRequestHolder.REQUEST_MAP.put(requestId, new TrpcFutureDecorator(responseFuture));
+        TrpcRequestHolder.PROTOCOL_MAP.put(requestId, protocol);
+        final long finalRequestId = requestId;
+        responseFuture.whenComplete(new BiConsumer<TrpcResponse, Throwable>() {
+            @Override
+            public void accept(TrpcResponse trpcResponse, Throwable throwable) {
+                TrpcRequestHolder.PROTOCOL_MAP.remove(finalRequestId);
+                TrpcRequestHolder.REQUEST_MAP.remove(finalRequestId);
+            }
+        });
         //已处理
         TrpcClientFilters.doFilter(protocol.getBody().getContent(), responseFuture);
-        // 发起请求
-        TrpcClient.sendRequest(protocol, protocol.getBody().getContent().getServiceInstanceName());
         return responseFuture;
     }
 

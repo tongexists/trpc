@@ -9,7 +9,7 @@ import java.io.Serializable;
 /**
  * 抽象响应
  */
-public interface TrpcResponse  {
+public interface TrpcResponse extends Serializable  {
     /**
      * 返回方法执行结果
      * @return 返回方法执行结果

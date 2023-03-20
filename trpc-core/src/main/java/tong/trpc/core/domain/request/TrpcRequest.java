@@ -2,12 +2,13 @@ package tong.trpc.core.domain.request;
 
 import tong.trpc.core.domain.response.TrpcResponse;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
 /**
  * 请求接口
  */
-public interface TrpcRequest  {
+public interface TrpcRequest extends Serializable {
     /**
      * 创建一个对应的TrpcResponse实例
      * @return 一个对应的TrpcResponse实例

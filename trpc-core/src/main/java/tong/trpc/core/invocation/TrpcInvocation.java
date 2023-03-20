@@ -18,6 +18,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * 调用实例
@@ -100,7 +101,7 @@ public class TrpcInvocation<T> {
      * @throws InterruptedException
      */
     void sendRequest() throws InterruptedException {
-        this.requestId = TrpcRequestHolder.REQUEST_ID.incrementAndGet();
+        this.requestId = TrpcInvocationUtils.newRequestId();
         this.request.setRequestType(this.requestType);
         this.request.setClassName(this.serviceInterfaceName);
         this.request.setMethodName(this.methodName);
@@ -127,8 +128,18 @@ public class TrpcInvocation<T> {
      * 配置TrpcRequest
      * @param consumer
      */
-    public void configRequest(Consumer<TrpcRequest> consumer) {
+    public TrpcInvocation<T> configRequest(Consumer<TrpcRequest> consumer) {
         this.configRequestConsumer = consumer;
+        return this;
+    }
+
+    /**
+     * 配置Invocation
+     * @param consumer
+     */
+    public TrpcInvocation<T> configInvocation(Consumer<TrpcInvocation<T>> consumer) {
+        consumer.accept(this);
+        return this;
     }
 
     /**
@@ -137,8 +148,23 @@ public class TrpcInvocation<T> {
      * @return  TrpcMultipleInvocation
      */
     public TrpcMultipleInvocation<T> multipleCall(Object[]... paramsArr) {
-        this.requestType = TrpcRequestType.TRPC_MULTIPLE_REQUEST.getCode();
-        return new TrpcMultipleInvocation<>(this, paramsArr);
+        return transfer(new Function<TrpcInvocation<T>, TrpcMultipleInvocation<T>>() {
+            @Override
+            public TrpcMultipleInvocation<T> apply(TrpcInvocation<T> tTrpcInvocation) {
+                tTrpcInvocation.requestType = TrpcRequestType.TRPC_MULTIPLE_REQUEST.getCode();
+                return new TrpcMultipleInvocation<>(tTrpcInvocation, paramsArr);
+            }
+        });
+    }
+
+    /**
+     * 转换为你想要的类型
+     * @param function
+     * @return
+     * @param <E> 你想要的类型
+     */
+    public <E> E transfer(Function<TrpcInvocation<T>, E> function) {
+        return function.apply(this);
     }
 
     /**

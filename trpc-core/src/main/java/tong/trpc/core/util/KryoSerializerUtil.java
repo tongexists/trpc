@@ -33,7 +33,7 @@ public class KryoSerializerUtil {
         }
     };
 
-    private static final int OUTPUT_BUFFER_SIZE = 1024 * 1024 * 2;
+    private static final int OUTPUT_BUFFER_SIZE = 1024 * 1024 * 6;
 
     private static ThreadLocal<Output> outputThreadLocal = new ThreadLocal() {
         @Override
@@ -42,7 +42,7 @@ public class KryoSerializerUtil {
         }
     };
 
-    private static final int INPUT_BUFFER_SIZE = 1024 * 1024 * 2;
+    private static final int INPUT_BUFFER_SIZE = 1024 * 1024 * 6;
 
     private static ThreadLocal<Input> inputThreadLocal = new ThreadLocal() {
         @Override
