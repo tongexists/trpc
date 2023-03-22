@@ -12,6 +12,7 @@ import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
+import tong.trpc.core.TrpcConfig;
 import tong.trpc.core.domain.TrpcConstant;
 import tong.trpc.core.io.handler.ExceptionHandler;
 import tong.trpc.core.io.handler.TrpcDecoder;
@@ -47,8 +48,8 @@ public class TrpcServer {
      */
     public void startNettyServer() {
         log.debug("begin start Netty server");
-        EventLoopGroup boss = new NioEventLoopGroup();
-        EventLoopGroup worker = new NioEventLoopGroup();
+        EventLoopGroup boss = new NioEventLoopGroup(TrpcConfig.serverAcceptRequestThreads);
+        EventLoopGroup worker = new NioEventLoopGroup(TrpcConfig.serverWorkThreads);
 
         ServerBootstrap bootstrap = new ServerBootstrap();
         bootstrap.group(boss, worker)

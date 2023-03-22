@@ -12,6 +12,7 @@ import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
+import tong.trpc.core.TrpcConfig;
 import tong.trpc.core.discovery.TrpcDiscovery;
 import tong.trpc.core.domain.TrpcConstant;
 import tong.trpc.core.domain.TrpcTransportProtocol;
@@ -36,7 +37,7 @@ public class TrpcClient {
     /**
      * netty的EventLoopGroup
      */
-    private final EventLoopGroup eventLoopGroup = new NioEventLoopGroup();
+    private final EventLoopGroup eventLoopGroup;
     /**
      * 远程服务端的地址
      */
@@ -54,6 +55,8 @@ public class TrpcClient {
      */
     public static ConcurrentHashMap<String, TrpcClient> clientPool = new ConcurrentHashMap<>();
 
+    private static ConcurrentHashMap<String, Object> clientLockMap = new ConcurrentHashMap<>();
+
     /**
      * 构造客户端，初始化netty客户端
      * @param serviceAddress 远程服务端的地址
@@ -62,6 +65,7 @@ public class TrpcClient {
     public TrpcClient(String serviceAddress, int servicePort) {
         log.info("begin init Netty Client,{},{}", serviceAddress, servicePort);
         bootstrap = new Bootstrap();
+        eventLoopGroup = new NioEventLoopGroup(TrpcConfig.clientWorkThreads);
         bootstrap.group(eventLoopGroup)
                 .channel(NioSocketChannel.class)
                 .handler(new ChannelInitializer<SocketChannel>() {
@@ -131,6 +135,15 @@ public class TrpcClient {
         return this.channel.isActive();
     }
 
+    private static Object addClientLock(String addressPort) {
+        if (!clientLockMap.containsKey(addressPort)) {
+            Object o = new Object();
+            clientLockMap.put(addressPort, o);
+            return o;
+        }
+        return clientLockMap.get(addressPort);
+    }
+
     /**
      * 服务发现服务名下的一个服务实例，连接上服务端，并发送数据
      * @param protocol 协议
@@ -143,17 +156,24 @@ public class TrpcClient {
         String[] split = addressPort.split(":");
         // 从池中找一下，看是否已经连接过
         TrpcClient client = TrpcClient.clientPool.get(addressPort);
+        Object lock = addClientLock(addressPort);
         //未连接
         if (client == null) {
-            client = new TrpcClient(split[0], Integer.parseInt(split[1]));
-            //连接
-            if (client.connect()) {
-                log.info("连接远程服务成功");
-            } else {
-                log.error("连接远程服务失败");
-                throw new RuntimeException("连接远程服务失败");
+            synchronized (lock) {
+                client = TrpcClient.clientPool.get(addressPort);
+                if (client == null) {
+                    client = new TrpcClient(split[0], Integer.parseInt(split[1]));
+                    //连接
+                    if (client.connect()) {
+                        log.info("连接远程服务成功");
+                    } else {
+                        log.error("连接远程服务失败");
+                        throw new RuntimeException("连接远程服务失败");
+                    }
+                    TrpcClient.clientPool.put(addressPort, client);
+                }
             }
-            TrpcClient.clientPool.put(addressPort, client);
+
         // 已连接
         } else {
             //连接已被关闭，重新连接

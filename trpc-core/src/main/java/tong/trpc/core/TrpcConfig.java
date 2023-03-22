@@ -1,5 +1,6 @@
 package tong.trpc.core;
 
+import io.netty.util.NettyRuntime;
 import tong.trpc.core.zipkin.ZipkinHolder;
 
 import java.io.IOException;
@@ -49,6 +50,20 @@ public class TrpcConfig {
      * 负载均衡策略
      */
     public static String balancePolicyClassName;
+    /**
+     * 服务端工作线程数
+     */
+    public static int serverWorkThreads;
+    /**
+     * 服务端处理连接请求的线程数
+     */
+    public static int serverAcceptRequestThreads;
+    /**
+     * 客户工作线程数
+     */
+    public static int clientWorkThreads;
+
+
 
     /**
      * 从trpc.properties中加载配置
@@ -83,6 +98,11 @@ public class TrpcConfig {
                     throw new RuntimeException("未在trpc.properties配置zipkinUrl");
                 }
             }
+
+            String defaultThreads = "" + NettyRuntime.availableProcessors() * 2;
+            serverWorkThreads = Integer.parseInt((String) properties.getOrDefault("serverWorkThreads", defaultThreads));
+            serverAcceptRequestThreads = Integer.parseInt((String) properties.getOrDefault("serverAcceptRequestThreads", defaultThreads));
+            clientWorkThreads = Integer.parseInt((String) properties.getOrDefault("clientWorkThreads", defaultThreads));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

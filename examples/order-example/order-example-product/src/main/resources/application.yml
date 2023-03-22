@@ -1,2 +1,6 @@
 server:
   port: 8001
+  tomcat:
+    threads:
+      max: 50
+      min-spare: 49
