@@ -1,0 +1,21 @@
+server:
+  port: 8002
+
+dubbo:
+  application:
+    name: storage
+  protocol:
+    name: dubbo
+    port: -1
+    serialization: kryo
+    threads: 50
+  registry:
+    address: zookeeper://${zookeeper.address:127.0.0.1}:2181
+  consumer:
+    check: false
+    threads: 50
+    timeout: 10000
+  provider:
+    threads: 50
+    timeout: 10000
+

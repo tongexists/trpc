@@ -1,0 +1,12 @@
+server:
+  port: 8002
+  tomcat:
+    threads:
+      min-spare: 49
+      max: 50
+spring:
+  application:
+    name: storage
+  cloud:
+    zookeeper:
+      connect-string: localhost:2181

@@ -6,11 +6,11 @@
     <parent>
         <artifactId>trpc-parent</artifactId>
         <groupId>tong.trpc</groupId>
-        <version>1.0</version>
+        <version>1.0.1</version>
     </parent>
 
     <artifactId>trpc-core</artifactId>
-    <version>1.0</version>
+    <version>${trpc.core.version}</version>
     <dependencies>
         <!-- https://mvnrepository.com/artifact/io.zipkin.reporter2/zipkin-sender-urlconnection -->
         <dependency>

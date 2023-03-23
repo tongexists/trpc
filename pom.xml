@@ -6,10 +6,14 @@
 
     <groupId>tong.trpc</groupId>
     <artifactId>trpc-parent</artifactId>
-    <version>1.0</version>
+    <version>1.0.1</version>
     <packaging>pom</packaging>
 
     <properties>
+        <!--模块版本-->
+        <trpc.core.version>1.0.1</trpc.core.version>
+        <trpc.spring.boot.starter.version>1.0</trpc.spring.boot.starter.version>
+        <!--依赖版本-->
         <spring.boot.version>2.7.5</spring.boot.version>
         <lombok.version>1.18.18</lombok.version>
         <netty.version>4.1.66.Final</netty.version>
@@ -23,8 +27,6 @@
         <curator.version>5.4.0</curator.version>
         <brave.version>5.14.0</brave.version>
         <zipkin-reporter.version>2.16.0</zipkin-reporter.version>
-        <trpc.core.version>1.0</trpc.core.version>
-        <trpc.spring.boot.starter.version>1.0</trpc.spring.boot.starter.version>
     </properties>
 
     <dependencyManagement>
