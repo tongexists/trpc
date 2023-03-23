@@ -11,6 +11,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import tong.trpc.core.TrpcConfig;
 import tong.trpc.core.discovery.TrpcDiscovery;
@@ -29,6 +30,7 @@ import java.util.concurrent.TimeUnit;
  * 客户端
  */
 @Slf4j
+@Getter
 public class TrpcClient {
     /**
      * netty的Bootstrap
@@ -50,11 +52,20 @@ public class TrpcClient {
      * 通道，用于写数据
      */
     private Channel channel;
+
+    /**
+     * 最后一次写操作时间，ms
+     */
+    private long lastWriteTime;
+
     /**
      * 远程服务端的服务名 -》 客户端
      */
     public static ConcurrentHashMap<String, TrpcClient> clientPool = new ConcurrentHashMap<>();
 
+    /**
+     * ip:port -> 锁对象
+     */
     private static ConcurrentHashMap<String, Object> clientLockMap = new ConcurrentHashMap<>();
 
     /**
@@ -66,6 +77,7 @@ public class TrpcClient {
         log.info("begin init Netty Client,{},{}", serviceAddress, servicePort);
         bootstrap = new Bootstrap();
         eventLoopGroup = new NioEventLoopGroup(TrpcConfig.clientWorkThreads);
+        final TrpcClient that = this;
         bootstrap.group(eventLoopGroup)
                 .channel(NioSocketChannel.class)
                 .handler(new ChannelInitializer<SocketChannel>() {
@@ -80,7 +92,7 @@ public class TrpcClient {
                                 .addLast(new IdleStateHandler(0, TrpcConstant.HEART_BEAT_INTERNAL,0, TimeUnit.SECONDS))
                                 .addLast(new TrpcDecoder())
                                 .addLast(new TrpcEncoder())
-                                .addLast(new TrpcClientHandler())
+                                .addLast(new TrpcClientHandler(that))
                                 .addLast(new ExceptionHandler());
                     }
                 });
@@ -88,6 +100,15 @@ public class TrpcClient {
         this.serviceAddress = serviceAddress;
         this.servicePort = servicePort;
 
+    }
+
+    /**
+     * 关闭客户端
+     */
+    public void close() {
+        this.eventLoopGroup.shutdownGracefully();
+        TrpcClient.clientPool.remove(this.serviceAddress + ":" + this.servicePort);
+        TrpcClient.clientLockMap.remove(this.serviceAddress + ":" + this.servicePort);
     }
 
     /**
@@ -124,6 +145,7 @@ public class TrpcClient {
         if (!this.channel.isActive()) {
             throw new ServerCloseConnectionException(String.format("与服务端[%s]的连接已断开", this.channel.remoteAddress().toString()));
         }
+        this.lastWriteTime = System.currentTimeMillis();
         this.channel.writeAndFlush(protocol);
     }
 
@@ -178,11 +200,16 @@ public class TrpcClient {
         } else {
             //连接已被关闭，重新连接
             if (!client.isActive()) {
-                if (client.connect()) {
-                    log.info("连接远程服务成功");
-                } else {
-                    log.error("连接远程服务失败");
-                    throw new RuntimeException("连接远程服务失败");
+                synchronized (lock) {
+                    if (!client.isActive()) {
+                        if (client.connect()) {
+                            log.info("连接远程服务成功");
+                        } else {
+                            log.error("连接远程服务失败");
+                            throw new RuntimeException("连接远程服务失败");
+                        }
+
+                    }
                 }
             }
         }

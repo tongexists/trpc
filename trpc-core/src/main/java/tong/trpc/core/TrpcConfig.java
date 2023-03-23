@@ -63,6 +63,12 @@ public class TrpcConfig {
      */
     public static int clientWorkThreads;
 
+    /**
+     * 客户端写操作空闲时间阈值，超过这个时间客户端会关闭
+     */
+    public static long clientWriteIdleThreshold;
+
+
 
 
     /**
@@ -103,6 +109,8 @@ public class TrpcConfig {
             serverWorkThreads = Integer.parseInt((String) properties.getOrDefault("serverWorkThreads", defaultThreads));
             serverAcceptRequestThreads = Integer.parseInt((String) properties.getOrDefault("serverAcceptRequestThreads", defaultThreads));
             clientWorkThreads = Integer.parseInt((String) properties.getOrDefault("clientWorkThreads", defaultThreads));
+
+            clientWriteIdleThreshold = Long.parseLong((String) properties.getOrDefault("clientWriteIdleThreshold", "600000"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -5,9 +5,11 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import lombok.extern.slf4j.Slf4j;
+import tong.trpc.core.TrpcConfig;
 import tong.trpc.core.domain.*;
 import tong.trpc.core.domain.response.TrpcResponse;
 import tong.trpc.core.exception.TrpcInvocationException;
+import tong.trpc.core.io.TrpcClient;
 import tong.trpc.core.io.serialize.TrpcSerialType;
 
 /**
@@ -16,7 +18,10 @@ import tong.trpc.core.io.serialize.TrpcSerialType;
 @Slf4j
 public class TrpcClientHandler extends SimpleChannelInboundHandler<TrpcTransportProtocol<TrpcResponse>> {
 
-
+    private TrpcClient client;
+    public TrpcClientHandler(TrpcClient client) {
+        this.client = client;
+    }
     /**
      * 根据请求id获得异步对象，根据响应码来决定是成功还是异常完成
      * @param ctx           the {@link ChannelHandlerContext} which this {@link SimpleChannelInboundHandler}
@@ -51,13 +56,18 @@ public class TrpcClientHandler extends SimpleChannelInboundHandler<TrpcTransport
         if (evt instanceof IdleStateEvent){
             IdleStateEvent event = (IdleStateEvent)evt;
             if (event.state()== IdleState.WRITER_IDLE){
-                log.debug(String.format("隔%d秒发起心跳",TrpcConstant.HEART_BEAT_INTERNAL));
-                TrpcTransportProtocolHeader header = new TrpcTransportProtocolHeader(TrpcConstant.MAGIC,
-                        TrpcSerialType.TrpcKryoSerializer.getCode(), TrpcMessageType.HEARTBEAT.getCode(),
-                        TrpcRequestHolder.REQUEST_ID.incrementAndGet(), 0
-                        );
-                TrpcTransportProtocol protocol = new TrpcTransportProtocol(header, new TrpcTransportProtocolBody());
-                ctx.writeAndFlush(protocol);
+                if (System.currentTimeMillis() - this.client.getLastWriteTime() > TrpcConfig.clientWriteIdleThreshold) {
+                    log.info("客户端写操作空闲时间超过{}ms，即将关闭客户端",TrpcConfig.clientWriteIdleThreshold);
+                    this.client.close();
+                } else {
+                    log.debug(String.format("隔%d秒发起心跳",TrpcConstant.HEART_BEAT_INTERNAL));
+                    TrpcTransportProtocolHeader header = new TrpcTransportProtocolHeader(TrpcConstant.MAGIC,
+                            TrpcSerialType.TrpcKryoSerializer.getCode(), TrpcMessageType.HEARTBEAT.getCode(),
+                            TrpcRequestHolder.REQUEST_ID.incrementAndGet(), 0
+                    );
+                    TrpcTransportProtocol protocol = new TrpcTransportProtocol(header, new TrpcTransportProtocolBody());
+                    ctx.writeAndFlush(protocol);
+                }
             }
         }
         ctx.fireUserEventTriggered(evt);
