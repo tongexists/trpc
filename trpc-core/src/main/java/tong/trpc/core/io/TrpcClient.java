@@ -106,6 +106,7 @@ public class TrpcClient {
      * 关闭客户端
      */
     public void close() {
+        this.channel.close();
         this.eventLoopGroup.shutdownGracefully();
         TrpcClient.clientPool.remove(this.serviceAddress + ":" + this.servicePort);
         TrpcClient.clientLockMap.remove(this.serviceAddress + ":" + this.servicePort);
