@@ -50,13 +50,13 @@ public class TrpcServerTracingInterceptor implements TrpcServerFilter {
         Throwable error = null;
         CurrentTraceContext currentTraceContext = this.rpcTracing.tracing().currentTraceContext();
         try (CurrentTraceContext.Scope ws = currentTraceContext.newScope(span.context())) { // 2.
-            span.tag("args", FastjsonSerializerUtil.objectToJson(request.getParams()));
+            span.tag("serverArgs", FastjsonSerializerUtil.objectToJson(request.getParams()));
             chain.doFilter(request, response);
         } catch (Throwable e) {
             error = e; // 4.
             throw e;
         } finally {
-            span.tag("result", FastjsonSerializerUtil.objectToJson(response.getData()));
+            span.tag("serverResult", FastjsonSerializerUtil.objectToJson(response.getData()));
             TrpcZipkinServerResponse responseWrapper =
                     new TrpcZipkinServerResponse(requestWrapper,response, error);
             handler.handleSend(responseWrapper, span); // 5.

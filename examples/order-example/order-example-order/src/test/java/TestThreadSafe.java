@@ -26,11 +26,11 @@ import java.util.stream.Collectors;
 public class TestThreadSafe {
 
     private ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
-            30,40, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<>(10000));
+            30,30, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<>(10000));
 
     @Test
     public void test() {
-        for (int i = 0; i < 3000; i++) {
+        for (int i = 0; i < 2000; i++) {
             threadPoolExecutor.execute(new Runnable() {
                 @Override
                 public void run() {

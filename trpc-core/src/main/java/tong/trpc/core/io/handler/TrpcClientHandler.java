@@ -34,15 +34,9 @@ public class TrpcClientHandler extends SimpleChannelInboundHandler<TrpcTransport
         log.debug("receive Rpc Server Result");
         long requestId = msg.getHeader().getRequestId();
         //根据ID获得异步对象
-        TrpcFutureDecorator decorator = TrpcRequestHolder.REQUEST_MAP.remove(requestId);
+        TrpcFutureDecorator decorator = TrpcRequestHolder.REQUEST_MAP.get(requestId);
         TrpcResponse response = msg.getBody().getContent();
-        // 成功
-        if (response.getCode() == TrpcResponseCode.SUCCESS.getCode()) {
-            decorator.getResponseFuture().complete(msg.getBody().getContent());
-        // 异常
-        } else {
-            decorator.getResponseFuture().completeExceptionally(new TrpcInvocationException(response.toString(), null));
-        }
+        decorator.getResponseFuture().complete(response);
     }
 
     /**

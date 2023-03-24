@@ -1,8 +1,12 @@
 package tong.trpc.core.filter.client;
 
 import lombok.extern.slf4j.Slf4j;
+import tong.trpc.core.domain.TrpcFutureDecorator;
+import tong.trpc.core.domain.TrpcRequestHolder;
+import tong.trpc.core.domain.TrpcResponseCode;
 import tong.trpc.core.domain.request.TrpcRequest;
 import tong.trpc.core.domain.response.TrpcResponse;
+import tong.trpc.core.domain.response.TrpcResponseImpl;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -17,16 +21,25 @@ public class TrpcClientExceptionHandlerFilter implements TrpcClientFilter {
     /**
      * 遇到异常，让CompletableFuture以异常结束
      * @param request
-     * @param future
      * @param chain
      */
     @Override
-    public void doFilter(TrpcRequest request, CompletableFuture<TrpcResponse> future, TrpcClientFilterChain chain) {
+    public TrpcResponse doFilter(TrpcRequest request, TrpcClientFilterChain chain) {
         try {
-            chain.doFilter(request, future);
+            TrpcResponse response = chain.doFilter(request);
+
+            return response;
         } catch (Exception e) {
             log.error("",e);
-            future.completeExceptionally(e);
+            long requestId = request.getRequestId();
+            TrpcFutureDecorator trpcFutureDecorator = TrpcRequestHolder.REQUEST_MAP.get(requestId);
+            if (trpcFutureDecorator != null && trpcFutureDecorator.getResponseFuture() != null) {
+                trpcFutureDecorator.getResponseFuture().completeExceptionally(e);
+            }
+            TrpcResponse response = new TrpcResponseImpl();
+            response.setCode(TrpcResponseCode.ERROR.getCode());
+            response.setMsg("本地客户端遇到异常："+e.getMessage());
+            return response;
         }
     }
 

@@ -3,6 +3,7 @@ package tong.trpc.core.zipkin;
 import brave.Span;
 import brave.Tracer;
 import brave.propagation.CurrentTraceContext;
+import brave.propagation.Propagation;
 import brave.propagation.TraceContext;
 import brave.rpc.RpcClientHandler;
 import brave.rpc.RpcTracing;
@@ -52,32 +53,39 @@ public class TrpcClientTracingInterceptor implements TrpcClientFilter {
      * 先从ZipkinHolder.traceContextThreadLocal看当前线程上下文是否有traceContext，
      * 记录入参，捕获到异常则记录异常。
      * @param request 请求
-     * @param future 响应的CompletableFuture
      * @param chain 过滤器链
      */
     @Override
-    public void doFilter(TrpcRequest request, CompletableFuture<TrpcResponse> future, TrpcClientFilterChain chain) {
-        TraceContext currentThreadTraceContext = ZipkinHolder.traceContextThreadLocal.get();
+    public TrpcResponse doFilter(TrpcRequest request, TrpcClientFilterChain chain) {
+        TraceContext.Extractor<TrpcRequest> extractor = this.rpcTracing.propagation().extractor(new Propagation.RemoteGetter<TrpcRequest>() {
+            @Override
+            public Span.Kind spanKind() {
+                return Span.Kind.CLIENT;
+            }
+
+            @Override
+            public String get(TrpcRequest request, String fieldName) {
+                return (String) request.getAttributes().get(fieldName);
+            }
+        });
+        TraceContext currentThreadTraceContext = extractor.extract(request).context();
         TrpcZipkinClientRequest requestWrapper = new TrpcZipkinClientRequest(request);
         Span span = handler.handleSendWithParent(requestWrapper, currentThreadTraceContext); // 1.
         Throwable error = null;
         CurrentTraceContext currentTraceContext = this.rpcTracing.tracing().currentTraceContext();
+        TrpcResponse response = null;
         try (CurrentTraceContext.Scope ws = currentTraceContext.newScope(span.context())) { // 2.
-            span.tag("args", FastjsonSerializerUtil.objectToJson(request.getParams()));
-            chain.doFilter(request, future);
+            span.tag("clientArgs", FastjsonSerializerUtil.objectToJson(request.getParams()));
+            response = chain.doFilter(request);
+            return response;
         } catch (Throwable e) {
             error = e; // 4.
             throw e;
         } finally {
             Throwable finalError = error;
-            future.whenComplete(new BiConsumer<TrpcResponse, Throwable>() {
-                @Override
-                public void accept(TrpcResponse response, Throwable throwable) {
-                    span.tag("result", FastjsonSerializerUtil.objectToJson(response.getData()));
-                    TrpcZipkinClientResponse responseWrapper = new TrpcZipkinClientResponse(requestWrapper, response, finalError);
-                    handler.handleReceive(responseWrapper, span); // 5.
-                }
-            });
+            span.tag("clientResult", FastjsonSerializerUtil.objectToJson(response == null? "响应为空" : response.getData()));
+            TrpcZipkinClientResponse responseWrapper = new TrpcZipkinClientResponse(requestWrapper, response, finalError);
+            handler.handleReceive(responseWrapper, span); // 5.
         }
 
     }

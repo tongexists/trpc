@@ -33,16 +33,15 @@ public class TrpcClientFilterChain {
     /**
      * 取下一未执行过滤的过滤器，执行过滤。若未找到下一个则结束过滤
      * @param request 请求
-     * @param response 响应的CompletableFuture
      */
-    public void doFilter(TrpcRequest request, CompletableFuture<TrpcResponse> response) {
+    public TrpcResponse doFilter(TrpcRequest request) {
         TrpcClientFilterChain chain = this;
         chain.index += 1;
         if (chain.index >= chain.filters.length) {
-            return;
+            return null;
         }
         TrpcClientFilter curFilter = chain.filters[chain.index];
-        curFilter.doFilter(request, response, chain);
+        return curFilter.doFilter(request, chain);
     }
 
 

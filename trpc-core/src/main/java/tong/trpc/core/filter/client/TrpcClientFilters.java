@@ -33,11 +33,10 @@ public class TrpcClientFilters {
     /**
      * 执行过滤
      * @param request 请求
-     * @param response 响应的CompletableFuture
      */
-    public static void doFilter(TrpcRequest request, CompletableFuture<TrpcResponse> response) {
+    public static TrpcResponse doFilter(TrpcRequest request) {
         TrpcClientFilterChain chain = new TrpcClientFilterChain(filters.toArray(new TrpcClientFilter[0]));
-        chain.doFilter(request, response);
+        return chain.doFilter(request);
     }
 
     /**

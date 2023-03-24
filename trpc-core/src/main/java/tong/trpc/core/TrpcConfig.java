@@ -5,6 +5,10 @@ import tong.trpc.core.zipkin.ZipkinHolder;
 
 import java.io.IOException;
 import java.util.Properties;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Trpc的配置
@@ -68,8 +72,27 @@ public class TrpcConfig {
      */
     public static long clientWriteIdleThreshold;
 
+    /**
+     * 客户端过滤器处理的线程池最小数量
+     */
+    public static int clientFiltersThreadPoolMinSize;
+    /**
+     * 客户端过滤器处理的线程池最大数量
+     */
+    public static int clientFiltersThreadPoolMaxSize;
+    /**
+     * 客户端过滤器处理的线程池缓冲队列大小
+     */
+    public static int clientFiltersThreadPoolQueueSize;
 
+    /**
+     * 客户端过滤器处理的线程池
+     */
+    private static ThreadPoolExecutor clientFiltersThreadPool;
 
+    public static ThreadPoolExecutor getClientFiltersThreadPool() {
+        return clientFiltersThreadPool;
+    }
 
     /**
      * 从trpc.properties中加载配置
@@ -111,6 +134,18 @@ public class TrpcConfig {
             clientWorkThreads = Integer.parseInt((String) properties.getOrDefault("clientWorkThreads", defaultThreads));
 
             clientWriteIdleThreshold = Long.parseLong((String) properties.getOrDefault("clientWriteIdleThreshold", "600000"));
+
+
+            clientFiltersThreadPoolMinSize = Integer.parseInt((String) properties.getOrDefault("clientFiltersThreadPoolMinSize", "10"));
+            clientFiltersThreadPoolMaxSize = Integer.parseInt((String) properties.getOrDefault("clientFiltersThreadPoolMaxSize", "20"));
+            clientFiltersThreadPoolQueueSize = Integer.parseInt((String) properties.getOrDefault("clientFiltersThreadPoolQueueSize", "1000"));
+            clientFiltersThreadPool = new ThreadPoolExecutor(
+                    clientFiltersThreadPoolMinSize,
+                    clientFiltersThreadPoolMaxSize,
+                    60L, TimeUnit.SECONDS,
+                    new ArrayBlockingQueue<>(clientFiltersThreadPoolQueueSize),
+                    new NamedThreadFactory("trpc-client-filters-"),
+                    new ThreadPoolExecutor.AbortPolicy());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

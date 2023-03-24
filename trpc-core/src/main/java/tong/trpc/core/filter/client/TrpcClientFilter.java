@@ -13,12 +13,12 @@ import java.util.concurrent.CompletableFuture;
  */
 public interface TrpcClientFilter {
     /**
-     * 执行过滤
+     * 客户端过滤器
      * @param request 请求
-     * @param future 响应的CompletableFuture
      * @param chain 过滤器链
+     * @return 响应，若为null，则发生了异常
      */
-    void doFilter(TrpcRequest request, CompletableFuture<TrpcResponse> future, TrpcClientFilterChain chain);
+    TrpcResponse doFilter(TrpcRequest request, TrpcClientFilterChain chain);
 
     /**
      * 是否开启

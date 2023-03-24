@@ -48,6 +48,7 @@ public class OrderController {
     public Order createOrder(@RequestBody Order order) {
         //减库存
         Boolean result = trpcStorageService.decreaseStock(order.getProductId(), order.getCount()).sync();
+        
         //获取商品信息
         Product product = productService.getProduct(order.getProductId()).sync();
         order.setOrderId(new Random(System.currentTimeMillis()).nextLong());
@@ -64,6 +65,7 @@ public class OrderController {
     @PostMapping("/createOrderDepth")
     public Order createOrderDepth(@RequestBody Order order) {
         Boolean result = trpcStorageService.decreaseStockDepth(order.getProductId(), order.getCount()).sync();
+        
         Product product = productService.getProduct(order.getProductId()).sync();
         order.setOrderId(new Random(System.currentTimeMillis()).nextLong());
         order.setTotalPrice((long) (product.getPrice() * order.getCount()));
@@ -79,7 +81,9 @@ public class OrderController {
     @PostMapping("/createOrderException")
     public Order createOrderException(@RequestBody Order order) {
         Boolean result = trpcStorageService.decreaseStockException(order.getProductId(), order.getCount()).sync();
+        log.info("1111111111");
         Product product = productService.getProduct(order.getProductId()).sync();
+        log.info("222222222");
         order.setOrderId(new Random(System.currentTimeMillis()).nextLong());
         order.setTotalPrice((long) (product.getPrice() * order.getCount()));
         return order;
@@ -95,6 +99,7 @@ public class OrderController {
         CompletableFuture<Boolean> future = trpcStorageService.decreaseStock(order.getProductId(), order.getCount()).future();
         try {
             Boolean aBoolean = future.get();
+            
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } catch (ExecutionException e) {
@@ -117,6 +122,7 @@ public class OrderController {
             @Override
             public void onSuccess(Boolean aBoolean) {
                 log.info("减库存:{}", aBoolean.toString());
+
             }
 
             @Override

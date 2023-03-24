@@ -27,7 +27,7 @@ public class TrpcServerExceptionHandlerFilter implements TrpcServerFilter {
             log.error("",e);
             response.setCode(TrpcResponseCode.ERROR.getCode());
             response.setRequestId(request.getRequestId());
-            response.setMsg(e.getMessage());
+            response.setMsg("远程服务端遇到异常: "+ e.getMessage());
         }
     }
 
