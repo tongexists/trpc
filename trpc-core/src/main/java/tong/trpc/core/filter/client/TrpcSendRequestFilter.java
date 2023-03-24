@@ -18,7 +18,9 @@ import java.util.function.BiConsumer;
  */
 public class TrpcSendRequestFilter implements TrpcClientFilter{
     /**
-     * 发起请求
+     * 需要关注的是TrpcSendRequestFilter，他是具体发送请求的过滤器，
+     * TrpcSendRequestFilter发送请求并同步获取响应，
+     * 不会交给下个过滤器处理，因此即使将过滤器放在TrpcSendRequestFilter之后也无任何效果
      * @param request 请求
      * @param chain 过滤器链
      */

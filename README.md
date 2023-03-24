@@ -152,3 +152,6 @@ zipkinUrl=http://localhost:9411/api/v2/spans
 
 # 自定义请求处理
 请阅读[自定义请求处理](./doc/custom-request.md)
+
+# 配置项
+见tong.trpc.core.TrpcConfig，里面定义了许多配置项

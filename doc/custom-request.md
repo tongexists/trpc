@@ -89,21 +89,15 @@ productService.getProduct(...).configInvocation(new Consumer<TrpcInvocation<Prod
 public class XxFilter implements TrpcClientFilter {
 
     @Override
-    public void doFilter(TrpcRequest request, CompletableFuture<TrpcResponse> future, TrpcClientFilterChain chain) {
-        // 不是要处理的请求，放行
-        if (!(request instanceof MyXxRequest)) {
-            chain.doFilter(request, future);
+    public TrpcResponse doFilter(TrpcRequest request, TrpcClientFilterChain chain) {
+        try {
+            // 请求前处理...
+            TrpcResponse response = chain.doFilter(request);
+            // 响应完成后处理...
+            return response;
+        } catch (Exception e) {
+            // 异常处理...
         }
-        //发起请求前处理，比如对request操作、添加响应完成要回调做的事...
-        future.whenComplete(new BiConsumer<TrpcResponse, Throwable>() {
-            @Override
-            public void accept(TrpcResponse trpcResponse, Throwable throwable) {
-
-            }
-        });
-        chain.doFilter(request, future);
-        //future.get()获取结果
-        //发起请求后处理...
     }
 
     @Override
@@ -127,11 +121,11 @@ public class XxFilter implements TrpcClientFilter {
 
 比如自定义的过滤器应该在TrpcClientExceptionHandlerFilter和TrpcClientTracingInterceptor之间，那么自定义的过滤器的order方法返回是01或者02或者022，就是字典序要在0和1之间的
 
-需要关注的是TrpcSendRequestFilter，他是具体发送请求的过滤器。
+需要关注的是TrpcSendRequestFilter，他是具体发送请求的过滤器，TrpcSendRequestFilter发送请求并同步获取响应，不会交给下个过滤器处理，因此即使将过滤器放在TrpcSendRequestFilter之后也无任何效果
 ```java
     TrpcClientExceptionHandlerFilter("0", "TrpcClientExceptionHandlerFilter"),
     TrpcClientTracingInterceptor("1", "TrpcClientTracingInterceptor"),
-    TrpcSendRequestFilter("2", "TrpcSendRequestFilter");
+    TrpcSendRequestFilter("99999999", "TrpcSendRequestFilter");
 ```
 ### 1.2添加到过滤器链
 调用tong.trpc.core.filter.client.TrpcClientFilters.add()方法
