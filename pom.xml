@@ -6,12 +6,12 @@
 
     <groupId>tong.trpc</groupId>
     <artifactId>trpc-parent</artifactId>
-    <version>1.0.1</version>
+    <version>1.2</version>
     <packaging>pom</packaging>
 
     <properties>
         <!--模块版本-->
-        <trpc.core.version>1.0.1</trpc.core.version>
+        <trpc.core.version>1.2</trpc.core.version>
         <trpc.spring.boot.starter.version>1.0</trpc.spring.boot.starter.version>
         <!--依赖版本-->
         <spring.boot.version>2.7.5</spring.boot.version>
