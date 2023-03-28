@@ -30,7 +30,7 @@ public class TestThreadSafe {
 
     @Test
     public void test() {
-        for (int i = 0; i < 2000; i++) {
+        for (int i = 0; i < 5000; i++) {
             threadPoolExecutor.execute(new Runnable() {
                 @Override
                 public void run() {

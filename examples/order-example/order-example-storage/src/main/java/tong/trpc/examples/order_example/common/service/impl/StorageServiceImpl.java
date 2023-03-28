@@ -16,24 +16,44 @@ import tong.trpc.examples.order_example.common.service.TrpcProductService;
 @Slf4j
 public class StorageServiceImpl implements StorageService {
     @Override
-    public boolean decreaseStock(Long productId, Integer count) {
+    public Integer decreaseStock(Long productId, Integer count) {
+        if (productId <= 0 || productId >= 100) {
+            throw new RuntimeException("商品id无效");
+        }
+        if (count <= 0 || count >= 200) {
+            throw new RuntimeException("商品数量无效");
+        }
         log.info("商品[{}]减少库存{}操作成功", productId, count);
-        return true;
+        return count;
     }
 
     @Autowired
     private TrpcProductService productService;
 
     @Override
-    public boolean decreaseStockDepth(Long productId, Integer count) {
+    public Integer decreaseStockDepth(Long productId, Integer count) {
+        if (productId <= 0 || productId >= 100) {
+            throw new RuntimeException("商品id无效");
+        }
+        if (count <= 0 || count >= 200) {
+            throw new RuntimeException("商品数量无效");
+        }
+
         log.info("商品[{}]减少库存{}操作成功", productId, count);
         Product sync = productService.getProduct(productId).sync();
         log.info(sync.toString());
-        return true;
+        return count;
     }
 
     @Override
-    public boolean decreaseStockException(Long productId, Integer count) {
+    public Integer decreaseStockException(Long productId, Integer count) {
+        if (productId <= 0 || productId >= 100) {
+            throw new RuntimeException("商品id无效");
+        }
+        if (count <= 0 || count >= 200) {
+            throw new RuntimeException("商品数量无效");
+        }
+
         log.info("商品[{}]减少库存{}操作失败", productId, count);
         throw new RuntimeException(String.format("商品[%s]减少库存%s操作失败", productId, count));
     }

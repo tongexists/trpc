@@ -103,6 +103,9 @@ public class TrpcInvocationUtils {
      * @param protocol
      */
     private static void injectTraceContext(TrpcTransportProtocol<TrpcRequest> protocol) {
+        if (!TrpcConfig.traceEnable) {
+            return;
+        }
         TraceContext currentThreadTraceContext = ZipkinHolder.traceContextThreadLocal.get();
         TrpcRequest request = protocol.getBody().getContent();
         TraceContext.Injector<TrpcRequest> injector = ZipkinHolder.rpcTracing.propagation().injector(new Propagation.RemoteSetter<TrpcRequest>() {

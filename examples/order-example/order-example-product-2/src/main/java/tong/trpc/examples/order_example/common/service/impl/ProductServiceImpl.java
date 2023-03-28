@@ -16,9 +16,6 @@ import tong.trpc.examples.order_example.common.service.ProductService;
 public class ProductServiceImpl implements ProductService {
     @Override
     public Product getProduct(Long productId) {
-        if (productId <= 0 || productId >= 100) {
-            throw new RuntimeException("商品id无效");
-        }
         Product product = new Product();
         product.setProductId(productId);
         product.setName(String.format("Name[%s]", product.getProductId()));
@@ -30,13 +27,6 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product getProduct(Order order) {
-        if (order == null) {
-            throw new RuntimeException("order为空");
-        }
-        long productId = order.getProductId();
-        if (productId <= 0 || productId >= 100) {
-            throw new RuntimeException("商品id无效");
-        }
         Product product = new Product();
         product.setProductId(order.getProductId());
         product.setName(String.format("Name[%s]", product.getProductId()));

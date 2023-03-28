@@ -49,4 +49,35 @@ public class TestFuture {
         }
     }
 
+    @Test
+    public void testF() throws ExecutionException, InterruptedException {
+        CompletableFuture<Integer> a = new CompletableFuture<>();
+        a.whenComplete(new BiConsumer<Integer, Throwable>() {
+            @Override
+            public void accept(Integer integer, Throwable throwable) {
+                log.info("0000000000000");
+            }
+        });
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                a.complete(1);
+            }
+        }).start();
+        a.whenComplete(new BiConsumer<Integer, Throwable>() {
+            @Override
+            public void accept(Integer integer, Throwable throwable) {
+                log.info("aaaaaaaaaaa");
+            }
+        });
+//        Integer integer = a.get();
+//        log.info("i:-----------------{}", integer);
+        a.whenComplete(new BiConsumer<Integer, Throwable>() {
+            @Override
+            public void accept(Integer integer, Throwable throwable) {
+                log.info("bbbbbbbbbbbbbbb");
+            }
+        });
+
+    }
 }

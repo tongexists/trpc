@@ -1,0 +1,6 @@
+server:
+  port: 8007
+  tomcat:
+    threads:
+      max: 50
+      min-spare: 49

@@ -14,7 +14,9 @@ import tong.trpc.examples.order_example.common.service.TrpcStorageService;
 
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -47,12 +49,12 @@ public class OrderController {
     @PostMapping("/createOrder")
     public Order createOrder(@RequestBody Order order) {
         //减库存
-        Boolean result = trpcStorageService.decreaseStock(order.getProductId(), order.getCount()).sync();
+        Integer count = trpcStorageService.decreaseStock(order.getProductId(), order.getCount()).sync();
         
         //获取商品信息
         Product product = productService.getProduct(order.getProductId()).sync();
         order.setOrderId(new Random(System.currentTimeMillis()).nextLong());
-        order.setTotalPrice((long) (product.getPrice() * order.getCount()));
+        order.setTotalPrice((long) (product.getPrice() * count));
         order.setDesc(product.getName());
         return order;
     }
@@ -64,11 +66,11 @@ public class OrderController {
      */
     @PostMapping("/createOrderDepth")
     public Order createOrderDepth(@RequestBody Order order) {
-        Boolean result = trpcStorageService.decreaseStockDepth(order.getProductId(), order.getCount()).sync();
+        Integer count = trpcStorageService.decreaseStockDepth(order.getProductId(), order.getCount()).sync();
         
         Product product = productService.getProduct(order.getProductId()).sync();
         order.setOrderId(new Random(System.currentTimeMillis()).nextLong());
-        order.setTotalPrice((long) (product.getPrice() * order.getCount()));
+        order.setTotalPrice((long) (product.getPrice() * count));
         order.setDesc(product.getName());
         return order;
     }
@@ -80,12 +82,12 @@ public class OrderController {
      */
     @PostMapping("/createOrderException")
     public Order createOrderException(@RequestBody Order order) {
-        Boolean result = trpcStorageService.decreaseStockException(order.getProductId(), order.getCount()).sync();
+        Integer count = trpcStorageService.decreaseStockException(order.getProductId(), order.getCount()).sync();
         log.info("1111111111");
         Product product = productService.getProduct(order.getProductId()).sync();
         log.info("222222222");
         order.setOrderId(new Random(System.currentTimeMillis()).nextLong());
-        order.setTotalPrice((long) (product.getPrice() * order.getCount()));
+        order.setTotalPrice((long) (product.getPrice() * count));
         return order;
     }
 
@@ -96,19 +98,19 @@ public class OrderController {
      */
     @PostMapping("/createOrderFuture")
     public Order createOrderFuture(@RequestBody Order order) {
-        CompletableFuture<Boolean> future = trpcStorageService.decreaseStock(order.getProductId(), order.getCount()).future();
+        CompletableFuture<Integer> future = trpcStorageService.decreaseStock(order.getProductId(), order.getCount()).future();
         try {
-            Boolean aBoolean = future.get();
-            
+            Integer count = future.get();
+            Product product = productService.getProduct(order.getProductId()).sync();
+            order.setOrderId(new Random(System.currentTimeMillis()).nextLong());
+            order.setTotalPrice((long) (product.getPrice() * count));
+            return order;
+
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         }
-        Product product = productService.getProduct(order.getProductId()).sync();
-        order.setOrderId(new Random(System.currentTimeMillis()).nextLong());
-        order.setTotalPrice((long) (product.getPrice() * order.getCount()));
-        return order;
     }
 
     /**
@@ -118,11 +120,14 @@ public class OrderController {
      */
     @PostMapping("/createOrderCallback")
     public Order createOrderCallback(@RequestBody Order order) {
-        trpcStorageService.decreaseStock(order.getProductId(), order.getCount()).callback(new TrpcInvocation.CallBack<Boolean>() {
+        final Integer[] count = {null};
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        trpcStorageService.decreaseStock(order.getProductId(), order.getCount()).callback(new TrpcInvocation.CallBack<Integer>() {
             @Override
-            public void onSuccess(Boolean aBoolean) {
+            public void onSuccess(Integer aBoolean) {
+                count[0] = aBoolean;
                 log.info("减库存:{}", aBoolean.toString());
-
+                countDownLatch.countDown();
             }
 
             @Override
@@ -130,9 +135,14 @@ public class OrderController {
                 log.info("减库存失败",e);
             }
         });
+        try {
+            countDownLatch.await(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         Product product = productService.getProduct(order.getProductId()).sync();
         order.setOrderId(new Random(System.currentTimeMillis()).nextLong());
-        order.setTotalPrice((long) (product.getPrice() * order.getCount()));
+        order.setTotalPrice((long) (product.getPrice() * count[0]));
         return order;
     }
 

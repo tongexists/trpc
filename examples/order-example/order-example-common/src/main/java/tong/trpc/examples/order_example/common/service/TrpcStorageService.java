@@ -11,7 +11,7 @@ import tong.trpc.core.annotation.TrpcService;
 @TrpcService(serviceInstanceName = "storage")
 public interface TrpcStorageService {
 
-    TrpcInvocation<Boolean> decreaseStock(Long productId, Integer count);
-    TrpcInvocation<Boolean> decreaseStockDepth(Long productId, Integer count);
-    TrpcInvocation<Boolean> decreaseStockException(Long productId, Integer count);
+    TrpcInvocation<Integer> decreaseStock(Long productId, Integer count);
+    TrpcInvocation<Integer> decreaseStockDepth(Long productId, Integer count);
+    TrpcInvocation<Integer> decreaseStockException(Long productId, Integer count);
 }

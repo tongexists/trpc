@@ -7,8 +7,8 @@ package tong.trpc.examples.order_example.common.service;
  */
 public interface StorageService {
 
-    boolean decreaseStock(Long productId, Integer count);
-    boolean decreaseStockDepth(Long productId, Integer count);
-    boolean decreaseStockException(Long productId, Integer count);
+    Integer decreaseStock(Long productId, Integer count);
+    Integer decreaseStockDepth(Long productId, Integer count);
+    Integer decreaseStockException(Long productId, Integer count);
 
 }

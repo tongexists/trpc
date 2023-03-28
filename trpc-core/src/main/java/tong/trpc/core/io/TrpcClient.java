@@ -16,6 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import tong.trpc.core.TrpcConfig;
 import tong.trpc.core.discovery.TrpcDiscovery;
 import tong.trpc.core.domain.TrpcConstant;
+import tong.trpc.core.domain.TrpcMessageType;
+import tong.trpc.core.domain.TrpcRequestType;
 import tong.trpc.core.domain.TrpcTransportProtocol;
 import tong.trpc.core.exception.ServerCloseConnectionException;
 import tong.trpc.core.io.handler.ExceptionHandler;
@@ -146,7 +148,9 @@ public class TrpcClient {
         if (!this.channel.isActive()) {
             throw new ServerCloseConnectionException(String.format("与服务端[%s]的连接已断开", this.channel.remoteAddress().toString()));
         }
-        this.lastWriteTime = System.currentTimeMillis();
+        if (protocol.getHeader().getRequestType() != TrpcMessageType.HEARTBEAT.getCode()) {
+            this.lastWriteTime = System.currentTimeMillis();
+        }
         this.channel.writeAndFlush(protocol);
     }
 

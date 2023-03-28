@@ -133,7 +133,7 @@ public class TrpcConfig {
             serverAcceptRequestThreads = Integer.parseInt((String) properties.getOrDefault("serverAcceptRequestThreads", defaultThreads));
             clientWorkThreads = Integer.parseInt((String) properties.getOrDefault("clientWorkThreads", defaultThreads));
 
-            clientWriteIdleThreshold = Long.parseLong((String) properties.getOrDefault("clientWriteIdleThreshold", "600000"));
+            clientWriteIdleThreshold = Long.parseLong((String) properties.getOrDefault("clientWriteIdleThreshold", "60000"));
 
 
             clientFiltersThreadPoolMinSize = Integer.parseInt((String) properties.getOrDefault("clientFiltersThreadPoolMinSize", "10"));

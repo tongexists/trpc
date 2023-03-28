@@ -11,6 +11,7 @@
         <module>order-example-order</module>
         <module>order-example-common</module>
         <module>order-example-product</module>
+        <module>order-example-product-2</module>
         <module>order-example-storage</module>
     </modules>
     <packaging>pom</packaging>

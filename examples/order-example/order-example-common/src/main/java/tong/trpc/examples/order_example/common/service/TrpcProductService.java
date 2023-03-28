@@ -11,7 +11,7 @@ import tong.trpc.examples.order_example.common.domain.Product;
  * @Create 2023/3/18 11:00
  * @Version 1.0
  */
-@TrpcService(serviceInstanceName = "product", serialType = TrpcSerialType.TrpcProtostuffSerializer)
+@TrpcService(serviceInstanceName = "product", serialType = TrpcSerialType.TrpcFastjsonSerializer)
 public interface TrpcProductService {
 
     TrpcInvocation<Product> getProduct(Long productId);
